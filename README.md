@@ -1,4 +1,8 @@
 Erjok's favorite quote: "Razor sharp determination"
+Anthony Izekor's favorite quote: "Decisions determine destiny"
+Randalf Ehigiator's favorite: You cannot sink a boat that is offshore - by me
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 This is a Next.js project bootstrapped with create-next-app.
 
