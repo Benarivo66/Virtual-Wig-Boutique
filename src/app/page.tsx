@@ -3,17 +3,17 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import HeroCard from "./ui/HeroCard";
 import ProductCard from "./ui/ProductCard";
-import AboutUs from "./ui/AboutUs";
+// import AboutUs from "./ui/AboutUs";
 import Search from "./ui/Search";
 
 import { Suspense } from "react";
 
 import "./page.css";
-import { fetchFilteredProductsWithRating } from "@/app/lib/data";
+// import { fetchFilteredProductsWithRating } from "@/app/lib/data";
 
 export const metadata: Metadata = {
   title: "Home",
-  description: "Browse unique handmade products on Handcrafted Haven.",
+  description: "Browse unique handmade products on Virtual Wig Boutique.",
 };
 
 export default async function Home(props: {
@@ -24,7 +24,7 @@ export default async function Home(props: {
 }) {
   const searchParams = props.searchParams ? await props.searchParams : {};
   const query = searchParams?.query || "";
-  const products = (await fetchFilteredProductsWithRating(query)) || [];
+  // const products = (await fetchFilteredProductsWithRating(query)) || [];
 
   return (
     <div className={styles.page}>
@@ -36,7 +36,7 @@ export default async function Home(props: {
           <Search placeholder="Search invoices..." />
 
           <Suspense fallback={<div>Loading...</div>}>
-            <div className="products">
+            {/* <div className="products">
               {products.map((product, index) => (
                 <ProductCard
                   key={index}
@@ -48,11 +48,11 @@ export default async function Home(props: {
                   photoSrc={product.image_url}
                 />
               ))}
-            </div>
+            </div> */}
             {/* <Products query={query} /> */}
           </Suspense>
         </section>
-        <AboutUs />
+        {/* <AboutUs /> */}
       </main>
     </div>
   );

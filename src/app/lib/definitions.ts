@@ -1,30 +1,26 @@
-export type Product = {
+export type ProductField = {
   id: string;
-  user_id: string;
-  title: string;
-  category: string;
-  price: number;
+  name: string;
   description: string;
-  image_url: string;
-  public_name?: string; // Optional, used in product details
-  average_rating?: number | null; // Optional, used in product listing with ratings
+  price: number;
+  category: string;
+  image_url?: string;
+  video_url?: string;
+  average_rating?: number | null;
 };
 
-export type User = {
+export type UserField = {
   id: string;
+  name: string,
   email: string;
   password: string;
-  role: "user" | "artisan";
-  public_name: string;
-  image: string;
+  role: "user" | "admin";
 };
 
-export type Rating = {
+export type RatingField = {
   id: string;
-  user_id: string;
   product_id: string;
-  title: string;
   review: string;
-  star_rating: number;
+  rating: number;
   created_at: string;
 };

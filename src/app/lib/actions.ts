@@ -166,7 +166,7 @@ export async function createProduct(prevState: any, formData: FormData) {
       INSERT INTO products (id, user_id, title, category, price, description, image_url)
       VALUES (${id}, ${user_id}, ${title}, ${category}, ${price}, ${description}, ${image_url})
     `;
-    revalidatePath("/profile");
+    revalidatePath("/dashboard/products");
     return { message: "Product created successfully." };
   } catch (error) {
     return { message: "Database Error: Failed to create product." };

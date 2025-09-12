@@ -7,7 +7,7 @@ function page() {
       <h1>Welcome to Your Profile</h1>
       <p>
         Here you can manage your listings, update your information, and explore
-        your artisan dashboard. Enjoy your experience on Handcrafted Haven!
+        the dashboard. Enjoy your experience on Virtual Wig Boutique!
       </p>
     </section>
   );

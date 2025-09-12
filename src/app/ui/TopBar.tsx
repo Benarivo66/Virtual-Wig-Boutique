@@ -8,13 +8,13 @@ export default function TopBar() {
   return (
     <header className="topbar">
       <Link className="topbar-logo" href={"/"}>
-        Handcrafted Haven
+        Virtual Wig Boutique
       </Link>
       <div className="topbar-actions">
         <Link href={"/profile"}>
           <FaUserCircle className="topbar-icon" />
         </Link>
-        <Link href={"/cart"}>
+        <Link href={"/dashboard/cart"}>
           <FaShoppingCart className="topbar-icon" />
         </Link>
 

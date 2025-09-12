@@ -3,7 +3,7 @@ import RegisterForm from "../ui/RegisterForm";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "Create your Handcrafted Haven account.",
+  description: "Create your Virtual Wig Boutique account.",
 };
 
 export default function RegisterPage() {

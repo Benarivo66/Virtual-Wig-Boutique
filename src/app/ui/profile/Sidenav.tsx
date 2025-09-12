@@ -10,19 +10,10 @@ function Sidenav() {
         <li>
           <Link
             className={styles.sidenavLink}
-            href="/profile/create-listing"
-            aria-label="Create a new listing"
+            href="/dashboard/products"
+            aria-label="View products"
           >
-            Create Listing
-          </Link>
-        </li>
-        <li>
-          <Link
-            className={styles.sidenavLink}
-            href="/profile/update-listing"
-            aria-label="Update an existing listing"
-          >
-            Remove and View Listing
+            View Products
           </Link>
         </li>
       </ul>
