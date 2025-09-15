@@ -41,26 +41,17 @@ export default function RegisterForm() {
         )}
       </div>
       <div className={styles.formGroup}>
-        <label htmlFor="public_name" className={styles.label}>
-          Public Name
+        <label htmlFor="name" className={styles.label}>
+          Name
         </label>
         <input
-          name="public_name"
+          name="name"
           type="text"
           required
           className={styles.input}
         />
-        {state.errors?.public_name && (
-          <p className={styles.error}>{state.errors.public_name}</p>
-        )}
-      </div>
-      <div className={styles.formGroup}>
-        <label htmlFor="image" className={styles.label}>
-          Image URL
-        </label>
-        <input name="image" type="url" required className={styles.input} />
-        {state.errors?.image && (
-          <p className={styles.error}>{state.errors.image}</p>
+        {state.errors?.name && (
+          <p className={styles.error}>{state.errors.name}</p>
         )}
       </div>
       <div className={styles.formGroup}>
@@ -69,7 +60,7 @@ export default function RegisterForm() {
         </label>
         <select name="role" required className={styles.select}>
           <option value="user">User</option>
-          <option value="artisan">Artisan</option>
+          <option value="admin">Admin</option>
         </select>
         {state.errors?.role && (
           <p className={styles.error}>{state.errors.role}</p>

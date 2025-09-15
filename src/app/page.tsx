@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import styles from "./page.module.css";
-import HeroCard from "./ui/HeroCard";
-import ProductCard from "./ui/ProductCard";
-// import AboutUs from "./ui/AboutUs";
-import Search from "./ui/Search";
+import HeroCard from "./ui/HeroCard/HeroCard";
+import ProductCard from "./ui/ProductCard/ProductCard";
+
 
 import { Suspense } from "react";
 
@@ -33,8 +32,6 @@ export default async function Home(props: {
         <HeroCard />
         <section className="product-section">
           <h2>Products</h2>
-          <Search placeholder="Search invoices..." />
-
           <Suspense fallback={<div>Loading...</div>}>
             {/* <div className="products">
               {products.map((product, index) => (

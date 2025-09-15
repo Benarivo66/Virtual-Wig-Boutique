@@ -1,6 +1,6 @@
 import { FaRegStar, FaStar } from "react-icons/fa";
 import "./ProductReviews.css";
-import CreateReviewForm from "@/app/ui/CreateReviewForm";
+import CreateReviewForm from "@/app/ui/CreateReviewForm/CreateReviewForm";
 
 function ProductReviews({
   productId,
@@ -35,7 +35,7 @@ function ProductReviews({
               <h3 className="review_title">{review.title}</h3>
 
               <p className="review_content">{review.review}</p>
-              <p className="user">{review.public_name || "Anonymous"} </p>
+              <p className="user">{review.name || "Anonymous"} </p>
               <p className="date">
                 {new Date(review.created_at).toLocaleDateString()}
               </p>

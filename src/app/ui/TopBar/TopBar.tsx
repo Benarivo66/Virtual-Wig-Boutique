@@ -2,7 +2,7 @@ import React from "react";
 import { FaUserCircle, FaShoppingCart } from "react-icons/fa";
 import "./TopBar.css";
 import Link from "next/link";
-import SignOut from "./SignOut";
+import SignOut from "../Signout/SignOut";
 
 export default function TopBar() {
   return (
@@ -11,9 +11,6 @@ export default function TopBar() {
         Virtual Wig Boutique
       </Link>
       <div className="topbar-actions">
-        <Link href={"/profile"}>
-          <FaUserCircle className="topbar-icon" />
-        </Link>
         <Link href={"/dashboard/cart"}>
           <FaShoppingCart className="topbar-icon" />
         </Link>

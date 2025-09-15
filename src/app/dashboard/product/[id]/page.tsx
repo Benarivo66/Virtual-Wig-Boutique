@@ -1,5 +1,5 @@
-import ProductDetails from "@/app/ui/ProductDetails";
-import ProductReviews from "@/app/ui/ProductReviews";
+import ProductDetails from "@/app/ui/ProductDetails/ProductDetails";
+import ProductReviews from "@/app/ui/ProductReviews/ProductReviews";
 import { fetchProductById, fetchRatingsAndReviewsByID } from "@/app/lib/data";
 import { auth } from "@/auth";
 import "./page.css";

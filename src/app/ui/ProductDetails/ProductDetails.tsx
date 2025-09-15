@@ -1,10 +1,10 @@
 "use client";
-import { Product } from "@/app/lib/definitions";
+import { ProductField } from "@/app/lib/definitions";
 import { addToCart } from "@/app/lib/cart";
 import Image from "next/image";
 import "./ProductDetails.css";
 
-function ProductDetails({ product }: { product: Product }) {
+function ProductDetails({ product }: { product: ProductField }) {
   return (
     <div className="product">
       <div className="image-wrapper">
@@ -20,9 +20,9 @@ function ProductDetails({ product }: { product: Product }) {
         />
       </div>
       <div className="product-details">
-        <h1 className="product-details__title">{product.title}</h1>
+        <h1 className="product-details__title">{product.name}</h1>
         <div className="product-details__seller-name">
-          From {product.public_name}
+          From {product.name}
         </div>
         <div className="product-details__description">
           {product.description || "No description available."}
@@ -38,7 +38,7 @@ function ProductDetails({ product }: { product: Product }) {
           className="product-card__product-details__add-to-cart-button"
           onClick={() => {
             addToCart(product);
-            alert(`Added ${product.title} to cart!`);
+            alert(`Added ${product.name} to cart!`);
           }}
         >
           Add to Cart

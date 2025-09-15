@@ -91,7 +91,7 @@
 
 import { useEffect, useState } from "react";
 import { ProductField } from "@/app/lib/definitions";
-import ProductCard from "@/app/ui/ProductCard";
+import ProductCard from "@/app/ui/ProductCard/ProductCard";
 
 export default function ProductsPage({ products }: { products: ProductField[] }) {
   const [filtered, setFiltered] = useState(products);
