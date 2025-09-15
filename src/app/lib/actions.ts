@@ -29,9 +29,8 @@ const ReviewFormSchema = z.object({
 const UserRegistrationSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  public_name: z.string().min(1),
-  image: z.string().url(),
-  role: z.enum(["user", "artisan"]),
+  name: z.string().min(1),
+  role: z.enum(["user", "admin"]),
 });
 
 const ProductFormSchema = z.object({
@@ -53,6 +52,17 @@ export type State = {
   };
   message?: string | null;
 };
+
+export type UserState = {
+  errors?: {
+    name?: string[];
+    password?: string[];
+    email?: string[];
+    role?: string[];
+  };
+  message?: string | null;
+};
+
 
 export async function createReview(prevState: State, formData: FormData) {
   // Validate form using Zod
@@ -109,12 +119,11 @@ export async function authenticate(
   }
 }
 
-export async function createUser(prevState: any, formData: FormData) {
+export async function createUser(prevState: UserState, formData: FormData) {
   const validated = UserRegistrationSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
-    public_name: formData.get("public_name"),
-    image: formData.get("image"),
+    name: formData.get("name"),
     role: formData.get("role"),
   });
 
@@ -125,14 +134,14 @@ export async function createUser(prevState: any, formData: FormData) {
     };
   }
 
-  const { email, password, public_name, image, role } = validated.data;
+  const { email, password, name, role } = validated.data;
   const hashedPassword = await bcrypt.hash(password, 10);
   const id = uuidv4();
 
   try {
     await sql`
-      INSERT INTO users (id, email, password, public_name, image, role)
-      VALUES (${id}, ${email}, ${hashedPassword}, ${public_name}, ${image}, ${role})
+      INSERT INTO wig_users (id, email, password, name, role)
+      VALUES (${id}, ${email}, ${hashedPassword}, ${name}, ${role})
     `;
     return { message: "User registered successfully." };
   } catch (error) {
@@ -166,21 +175,10 @@ export async function createProduct(prevState: any, formData: FormData) {
       INSERT INTO products (id, user_id, title, category, price, description, image_url)
       VALUES (${id}, ${user_id}, ${title}, ${category}, ${price}, ${description}, ${image_url})
     `;
-    revalidatePath("/profile");
+    revalidatePath("/dashboard/products");
     return { message: "Product created successfully." };
   } catch (error) {
     return { message: "Database Error: Failed to create product." };
   }
 }
 
-export async function deleteProduct(productId: string, userId: string) {
-  try {
-    await sql`
-      DELETE FROM products WHERE id = ${productId} AND user_id = ${userId}
-    `;
-    revalidatePath("/profile/update-listing");
-    return { message: "Product deleted successfully." };
-  } catch (error) {
-    return { message: "Database Error: Failed to delete product." };
-  }
-}
