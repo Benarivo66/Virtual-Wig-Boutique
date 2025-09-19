@@ -91,7 +91,7 @@
 
 import { useEffect, useState } from "react";
 import { ProductField } from "@/app/lib/definitions";
-import ProductCard from "@/app/ui/ProductCard/ProductCard";
+import ProductCard from "@/app/ui/ProductCard";
 
 export default function ProductsPage({ products }: { products: ProductField[] }) {
   const [filtered, setFiltered] = useState(products);
@@ -155,9 +155,10 @@ export default function ProductsPage({ products }: { products: ProductField[] })
             name={product.name}
             description={product.description}
             price={product.price}
-            rating={product.average_rating || undefined}
+            average_rating={product.average_rating || undefined}
             image_url={product.image_url || ""}
             category={product.category}
+            video_url={product.video_url || ""}
           />
         ))}
       </div>

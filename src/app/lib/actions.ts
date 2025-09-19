@@ -34,13 +34,23 @@ const UserRegistrationSchema = z.object({
 });
 
 const ProductFormSchema = z.object({
-  user_id: z.string({ required_error: "Missing user ID." }),
-  title: z.string().min(1, { message: "Title is required." }),
-  category: z.string().min(1, { message: "Category is required." }),
-  price: z.coerce.number().min(0, { message: "Price must be positive." }),
+  name: z.string().min(1, { message: "Name is required." }),
   description: z.string().min(1, { message: "Description is required." }),
-  image_url: z.string().url({ message: "Image URL must be valid." }),
+  price: z.coerce.number().min(0, { message: "Price must be positive." }),
+  category: z.string().min(1, { message: "Category is required." }),
+  image_url: z
+    .string()
+    .url({ message: "Image URL must be valid." })
+    .optional()
+    .or(z.literal("")), 
+  video_url: z
+    .string()
+    .url({ message: "Video URL must be valid." })
+    .optional()
+    .or(z.literal("")),
+  average_rating: z.coerce.number().min(0).max(5).optional(), 
 });
+
 
 export type State = {
   errors?: {
@@ -62,6 +72,19 @@ export type UserState = {
   };
   message?: string | null;
 };
+
+export type ProductState = {
+  errors?: {
+    name?: string[];
+    description?: string[];
+    price?: string[];
+    category?: string[];
+    image_url?: string[];
+    video_url?: string[];
+    average_rating?: string[];
+  };
+  message?: string | null;
+}
 
 
 export async function createReview(prevState: State, formData: FormData) {
@@ -149,14 +172,18 @@ export async function createUser(prevState: UserState, formData: FormData) {
   }
 }
 
-export async function createProduct(prevState: any, formData: FormData) {
+export async function createProduct(
+  prevState: ProductState,
+  formData: FormData
+): Promise<ProductState> {
+
   const validated = ProductFormSchema.safeParse({
-    user_id: formData.get("user_id"),
-    title: formData.get("title"),
-    category: formData.get("category"),
-    price: formData.get("price"),
+    name: formData.get("name"),
     description: formData.get("description"),
+    price: formData.get("price"),
+    category: formData.get("category"),
     image_url: formData.get("image_url"),
+    video_url: formData.get("video_url") 
   });
 
   if (!validated.success) {
@@ -166,19 +193,20 @@ export async function createProduct(prevState: any, formData: FormData) {
     };
   }
 
-  const { user_id, title, category, price, description, image_url } =
-    validated.data;
+  const { name, description, price, category, image_url, video_url } = validated.data;
   const id = uuidv4();
 
   try {
     await sql`
-      INSERT INTO products (id, user_id, title, category, price, description, image_url)
-      VALUES (${id}, ${user_id}, ${title}, ${category}, ${price}, ${description}, ${image_url})
-    `;
+      INSERT INTO wig_products (id, name, description, price, category, image_url, video_url)
+      VALUES (${id}, ${name}, ${description}, ${price}, ${category}, ${image_url || null}, ${video_url || null})
+`;
+
     revalidatePath("/dashboard/products");
     return { message: "Product created successfully." };
   } catch (error) {
-    return { message: "Database Error: Failed to create product." };
+    console.error("Product creation failed:", error);
+    return { message: "Database or upload error: Failed to create product." };
   }
 }
 

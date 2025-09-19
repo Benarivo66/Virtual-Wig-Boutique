@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import styles from "./page.module.css";
 import HeroCard from "./ui/HeroCard/HeroCard";
-import ProductCard from "./ui/ProductCard/ProductCard";
+import ProductCard from "./ui/ProductCard";
 
 
 import { Suspense } from "react";
