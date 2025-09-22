@@ -24,7 +24,7 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    const redirectTo = formData.get('redirectTo') as string || '/dashboard';
+    const redirectTo = formData.get('redirectTo') as string || '/admin';
     await signIn('credentials', {
       email: formData.get('email'),
       password: formData.get('password'),
@@ -84,7 +84,7 @@ export async function createProduct(prevState: any, formData: FormData) {
     };
   }
 
-  redirect('/dashboard/products');
+  redirect('/admin/products');
 }
 
 const CreateUserSchema = z.object({

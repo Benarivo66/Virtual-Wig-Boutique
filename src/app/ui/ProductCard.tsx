@@ -45,7 +45,7 @@ export default function ProductCard({
         <div className="flex items-center gap-1">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
-              <FaRegStar key={i} className="text-gray-300 text-sm" />
+              <FaRegStar key={`no-review-${i}`} className="text-gray-300 text-sm" />
             ))}
           </div>
           <span className="text-xs text-gray-400">No reviews</span>
@@ -116,13 +116,24 @@ export default function ProductCard({
     if (onClick) {
       onClick(id);
     } else {
-      window.location.href = `/dashboard/product/${id}`;
+      window.location.href = `/admin/product/${id}`;
     }
   };
 
   return (
-    <div className="bg-white shadow-md rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 flex flex-col h-full group border border-gray-100 cursor-pointer"
-      onClick={handleCardClick}>
+    <div
+      className="bg-white shadow-md rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 flex flex-col h-full group border border-gray-100 cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
+      onClick={handleCardClick}
+      role="article"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+      aria-label={`${name} - ${category} wig, ${formatPrice(price)}`}
+    >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
         {/* Category Badge */}
@@ -170,8 +181,15 @@ export default function ProductCard({
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 pointer-events-none" />
 
         {/* Quick View Button - appears on hover */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium shadow-lg hover:bg-gray-50 transition-colors">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300">
+          <button
+            className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium shadow-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}
+            aria-label={`Quick view ${name}`}
+          >
             Quick View
           </button>
         </div>
@@ -205,13 +223,14 @@ export default function ProductCard({
           </div>
 
           <button
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 touch-manipulation min-h-[44px]"
             onClick={(e) => {
               e.stopPropagation();
               addToCart(product);
               // You might want to replace this alert with a toast notification
               alert(`Added ${name} to cart!`);
             }}
+            aria-label={`Add ${name} to shopping cart`}
           >
             Add to Cart
           </button>

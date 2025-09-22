@@ -19,8 +19,53 @@ function HeroComponent() {
   };
 
   const handleLearnMore = () => {
-    // Navigate to about page or show more info
-    window.location.href = '/dashboard/products';
+    // Navigate to products page
+    window.location.href = '/admin/products';
+  };
+
+  const handleSpecialOffer = () => {
+    // Copy promo code to clipboard and show notification
+    navigator.clipboard.writeText('WELCOME20').then(() => {
+      // Create a temporary notification
+      const notification = document.createElement('div');
+      notification.textContent = 'Promo code WELCOME20 copied to clipboard!';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.3s ease-out;
+      `;
+
+      // Add animation keyframes
+      if (!document.querySelector('#promo-notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'promo-notification-styles';
+        style.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      document.body.appendChild(notification);
+
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }).catch(() => {
+      // Fallback: scroll to products section
+      handleShopNow();
+    });
   };
 
   return (
@@ -52,21 +97,33 @@ function HeroComponent() {
               className="hero-component__left__wrapper__call-to-action primary"
               onClick={handleShopNow}
               type="button"
+              aria-label="Browse our product collection"
             >
+              <span className="button-icon" aria-hidden="true">🛍️</span>
               Shop Now
             </button>
             <button
               className="hero-component__left__wrapper__call-to-action secondary"
               onClick={handleLearnMore}
               type="button"
+              aria-label="View all products in our collection"
             >
+              <span className="button-icon" aria-hidden="true">👀</span>
               View Collection
             </button>
           </div>
           <div className="hero-component__left__wrapper__offer">
             <p className="offer-text">
-              <span className="offer-highlight">Special Offer:</span> Get 20% off your first order with code <strong>WELCOME20</strong>
+              <span className="offer-highlight" aria-hidden="true">🎉 Special Offer:</span> Get 20% off your first order with code <strong>WELCOME20</strong>
             </p>
+            <button
+              className="offer-button"
+              onClick={handleSpecialOffer}
+              type="button"
+              aria-label="Copy promo code WELCOME20 to clipboard"
+            >
+              Copy Code
+            </button>
           </div>
         </div>
       </div>

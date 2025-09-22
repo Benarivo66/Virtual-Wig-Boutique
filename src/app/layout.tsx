@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TopBar from "./ui/TopBar/TopBar";
 import ConditionalLayout from "./ui/ConditionalLayout";
+import { CartProvider, ToastProvider } from "./lib/contexts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,8 +67,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
       >
-        <TopBar />
-        <ConditionalLayout>{children}</ConditionalLayout>
+        <ToastProvider position="top-right">
+          <CartProvider>
+            <TopBar />
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   );

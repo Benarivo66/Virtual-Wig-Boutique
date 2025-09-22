@@ -10,11 +10,11 @@ interface ConditionalLayoutProps {
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
     const pathname = usePathname();
 
-    // Check if current route is a dashboard route
-    const isDashboardRoute = pathname.startsWith('/dashboard');
+    // Check if current route is an admin route
+    const isAdminRoute = pathname.startsWith('/admin');
 
-    if (isDashboardRoute) {
-        // Dashboard layout with sidebar
+    if (isAdminRoute) {
+        // Admin layout with sidebar
         return (
             <div className="flex min-h-screen">
                 <Sidenav />
