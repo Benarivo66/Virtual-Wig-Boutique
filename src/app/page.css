@@ -213,29 +213,50 @@ html {
     padding: 0.75rem 2rem;
     border-radius: 0.5rem;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     border: none;
+    position: relative;
+    overflow: hidden;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .promo-button.primary {
     background-color: white;
     color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
 }
 
 .promo-button.primary:hover {
     background-color: #f8f9ff;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+}
+
+.promo-button.primary:active {
+    transform: translateY(-1px);
+    transition: transform 0.1s;
 }
 
 .promo-button.secondary {
     background-color: transparent;
     color: white;
     border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .promo-button.secondary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+.promo-button.secondary:active {
+    transform: translateY(-1px);
+    transition: transform 0.1s;
 }
 
 /* Responsive adjustments */
@@ -359,6 +380,65 @@ html {
         padding: 0.5rem;
         font-size: 0.875rem;
     }
+}
+
+/* Enhanced interactive elements */
+.interactive-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.interactive-link:hover {
+    transform: translateY(-1px);
+}
+
+.interactive-link:active {
+    transform: translateY(0);
+    transition: transform 0.1s;
+}
+
+/* Enhanced button styles */
+.enhanced-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.enhanced-button:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.enhanced-button:active {
+    transform: translateY(0) translateZ(0);
+    transition: transform 0.1s;
+}
+
+.enhanced-button:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Ripple effect for buttons */
+.enhanced-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.enhanced-button:active::before {
+    width: 300px;
+    height: 300px;
 }
 
 /* Very small screens */

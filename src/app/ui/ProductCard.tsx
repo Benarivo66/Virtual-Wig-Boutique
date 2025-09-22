@@ -122,7 +122,8 @@ export default function ProductCard({
     if (onClick) {
       onClick(id);
     } else {
-      window.location.href = `/admin/product/${id}`;
+      // Navigate to customer product detail page instead of admin page
+      window.location.href = `/product/${id}`;
     }
   };
 

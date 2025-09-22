@@ -42,6 +42,13 @@ export function searchProducts(
 export function filterProductsByCategory(products: ProductField[], category: string | null): ProductField[] {
     if (!category) return products;
 
+    // Handle special "New Arrivals" category
+    if (category.toLowerCase() === 'new arrivals') {
+        return products
+            .filter(product => (product.average_rating || 0) >= 4.5)
+            .sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+    }
+
     return products.filter(product =>
         product.category.toLowerCase() === category.toLowerCase()
     );

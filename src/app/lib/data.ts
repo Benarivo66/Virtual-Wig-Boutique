@@ -22,6 +22,22 @@ export async function fetchProducts() {
   }
 }
 
+export async function fetchProductById(id: string) {
+  try {
+    const product = await sql<ProductField[]>`
+      SELECT
+       *
+      FROM wig_products
+      WHERE id = ${id}
+    `;
+
+    return product[0] || null;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch product.');
+  }
+}
+
 export function getUniqueCategories(products: ProductField[]): string[] {
   const categories = products.map(product => product.category);
   return [...new Set(categories)].sort();

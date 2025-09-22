@@ -92,7 +92,7 @@ export default function PromotionalBanner({
 
                 <div className="banner-actions">
                     <button
-                        className="banner-button primary"
+                        className="banner-button primary enhanced-button"
                         onClick={onPrimaryClick}
                         type="button"
                     >
@@ -100,7 +100,7 @@ export default function PromotionalBanner({
                     </button>
                     {secondaryButtonText && onSecondaryClick && (
                         <button
-                            className="banner-button secondary"
+                            className="banner-button secondary enhanced-button"
                             onClick={onSecondaryClick}
                             type="button"
                         >

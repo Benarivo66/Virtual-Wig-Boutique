@@ -60,13 +60,16 @@ export default function Home() {
         setCategoriesError(null);
         try {
           const uniqueCategories = getUniqueCategories(fetchedProducts);
-          setCategories(uniqueCategories);
+          // Add "New Arrivals" as a special category at the beginning
+          const categoriesWithNewArrivals = ['New Arrivals', ...uniqueCategories];
+          setCategories(categoriesWithNewArrivals);
         } catch (categoryError) {
           console.error("Failed to extract categories:", categoryError);
           setCategoriesError("Failed to load categories");
           // Fallback to placeholder categories
           const placeholderCategories = getUniqueCategories(placeholderProducts as ProductField[]);
-          setCategories(placeholderCategories);
+          const categoriesWithNewArrivals = ['New Arrivals', ...placeholderCategories];
+          setCategories(categoriesWithNewArrivals);
         } finally {
           setCategoriesLoading(false);
         }
@@ -80,7 +83,8 @@ export default function Home() {
         setCategoriesError("Failed to load categories from API");
         try {
           const placeholderCategories = getUniqueCategories(placeholderProducts as ProductField[]);
-          setCategories(placeholderCategories);
+          const categoriesWithNewArrivals = ['New Arrivals', ...placeholderCategories];
+          setCategories(categoriesWithNewArrivals);
         } catch (categoryError) {
           console.error("Failed to extract placeholder categories:", categoryError);
           setCategoriesError("Failed to load categories");
@@ -120,12 +124,22 @@ export default function Home() {
   };
 
   const handlePromotionalAction = () => {
-    // Scroll to products section
-    const productsSection = document.querySelector('[data-section="products"]');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-      // Focus the products section for screen readers
-      (productsSection as HTMLElement).focus();
+    // Filter for new arrivals (products with rating >= 4.5 or latest products)
+    const newArrivals = products
+      .filter(product => (product.average_rating || 0) >= 4.5)
+      .sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+
+    if (newArrivals.length > 0) {
+      // Set category to show new arrivals
+      setSelectedCategory('New Arrivals');
+
+      // Scroll to products section
+      const productsSection = document.querySelector('[data-section="products"]');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+        // Focus the products section for screen readers
+        (productsSection as HTMLElement).focus();
+      }
     }
   };
 

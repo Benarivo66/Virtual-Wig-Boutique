@@ -364,9 +364,6 @@ export default function ProductCarousel({
                                 product={product}
                                 showCategory={true}
                                 showRating={true}
-                                onClick={(productId) => {
-                                    window.location.href = `/admin/product/${productId}`;
-                                }}
                             />
                         </div>
                     ))}
