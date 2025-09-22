@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import TopBar from "./ui/TopBar";
+import TopBar from "./ui/TopBar/TopBar";
+import ConditionalLayout from "./ui/ConditionalLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,22 +16,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Handcrafted Haven",
-    template: "%s | Handcrafted Haven",
+    default: "Virtual Wig Boutique",
+    template: "%s | Virtual Wig Boutique",
   },
-  description: "Discover, buy, and sell unique handmade items at Handcrafted Haven.",
+  description: "Discover, buy, and sell unique items at Virtual Wig Boutique.",
   keywords: ["handmade", "marketplace", "crafts", "artisan", "shop"],
   openGraph: {
-    title: "Handcrafted Haven",
-    description: "Discover, buy, and sell unique handmade items at Handcrafted Haven.",
+    title: "Virtual Wig Boutique",
+    description: "Discover, buy, and sell unique items at Virtual Wig Boutique",
     url: "https://handcrafted-haven22.vercel.app/",
-    siteName: "Handcrafted Haven",
+    siteName: "Virtual Wig Boutique",
     images: [
       {
         url: "/hero-image.webp",
         width: 1200,
         height: 630,
-        alt: "Handcrafted Haven",
+        alt: "Virtual Wig Boutique",
         type: "image/jpeg",
       },
     ],
@@ -39,6 +40,22 @@ export const metadata: Metadata = {
   },
 };
 
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   return (
+//     <html lang="en">
+//       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+//           <TopBar />
+//           {children}
+//       </body>
+//     </html>
+//   );
+// }
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,9 +63,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-          <TopBar />
-          {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+      >
+        <TopBar />
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );

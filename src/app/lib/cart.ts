@@ -1,7 +1,7 @@
-import type { Product } from "./definitions";
+import type { ProductField } from "./definitions";
 
 // Utility functions for cart management using localStorage
-export type CartItem = Product & { quantity: number };
+export type CartItem = ProductField & { quantity: number };
 
 export function getCart(): CartItem[] {
   if (typeof window === "undefined") return [];
@@ -12,7 +12,7 @@ export function getCart(): CartItem[] {
   }
 }
 
-export function addToCart(product: Product) {
+export function addToCart(product: ProductField) {
   if (typeof window === "undefined") return;
   const cart: CartItem[] = getCart();
   const index = cart.findIndex((item) => item.id === product.id);

@@ -1,5 +1,5 @@
 {
-  "name": "handcrafted-haven22",
+  "name": "Virtual Wig Boutique",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "lucide-react": "^0.511.0",
-    "next": "15.4.0-canary.47",
+    "next": "15.5.3",
     "next-auth": "5.0.0-beta.28",
     "postgres": "^3.4.7",
     "react": "^19.1.0",

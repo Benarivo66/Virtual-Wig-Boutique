@@ -2,15 +2,15 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
 import { z } from "zod";
-import type { User } from "@/app/lib/definitions";
+import type { UserField } from "@/app/lib/definitions";
 import bcrypt from "bcrypt";
 import postgres from "postgres";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-async function getUser(email: string): Promise<User | undefined> {
+async function getUser(email: string): Promise<UserField | undefined> {
   try {
-    const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
+    const user = await sql<UserField[]>`SELECT * FROM wig_users WHERE email=${email}`;
     console.log("User:", user);
     return user[0];
   } catch (error) {
