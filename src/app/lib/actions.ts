@@ -1,212 +1,190 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { signIn, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import postgres from "postgres";
-import { signIn } from "@/auth";
+import postgres from 'postgres';
 import { AuthError } from "next-auth";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
-
-const ReviewFormSchema = z.object({
-  productId: z.string({
-    required_error: "Missing product ID.",
-  }),
-  userId: z.string({
-    required_error: "Missing user ID.",
-  }),
-  title: z.string().min(1, { message: "Title is required." }),
-  star_rating: z.coerce
-    .number()
-    .min(1, { message: "Rating must be at least 1 star." })
-    .max(5, { message: "Rating cannot exceed 5 stars." }),
-  review: z.string().min(1, { message: "Review content is required." }),
-});
-
-const UserRegistrationSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  name: z.string().min(1),
-  role: z.enum(["user", "admin"]),
-});
-
-const ProductFormSchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
-  description: z.string().min(1, { message: "Description is required." }),
-  price: z.coerce.number().min(0, { message: "Price must be positive." }),
-  category: z.string().min(1, { message: "Category is required." }),
-  image_url: z
-    .string()
-    .url({ message: "Image URL must be valid." })
-    .optional()
-    .or(z.literal("")), 
-  video_url: z
-    .string()
-    .url({ message: "Video URL must be valid." })
-    .optional()
-    .or(z.literal("")),
-  average_rating: z.coerce.number().min(0).max(5).optional(), 
-});
-
 
 export type State = {
   errors?: {
-    productId?: string[];
-    userId?: string[];
-    title?: string[];
-    star_rating?: string[];
-    review?: string[];
+    [key: string]: string[];
   };
   message?: string | null;
 };
 
-export type UserState = {
-  errors?: {
-    name?: string[];
-    password?: string[];
-    email?: string[];
-    role?: string[];
-  };
-  message?: string | null;
-};
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-export type ProductState = {
-  errors?: {
-    name?: string[];
-    description?: string[];
-    price?: string[];
-    category?: string[];
-    image_url?: string[];
-    video_url?: string[];
-    average_rating?: string[];
-  };
-  message?: string | null;
-}
-
-
-export async function createReview(prevState: State, formData: FormData) {
-  // Validate form using Zod
-  const validatedFields = ReviewFormSchema.safeParse({
-    productId: formData.get("productId"),
-    userId: formData.get("userId"),
-    title: formData.get("title"),
-    star_rating: formData.get("rating"),
-    review: formData.get("content"),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Review.",
-    };
-  }
-
-  const { productId, userId, title, star_rating, review } =
-    validatedFields.data;
-  const created_at = new Date().toISOString();
-
-  try {
-    await sql`
-      INSERT INTO ratings (product_id, user_id, title, star_rating, review, created_at)
-      VALUES (${productId}, ${userId}, ${title}, ${star_rating}, ${review}, ${created_at})
-    `;
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to Create Review.",
-    };
-  }
-
-  revalidatePath(`/product/${productId}`);
-  redirect(`/product/${productId}`);
+export async function handleSignOut() {
+  await signOut({ redirectTo: "/" });
 }
 
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData
+  formData: FormData,
 ) {
   try {
-    await signIn("credentials", formData);
+    const redirectTo = formData.get('redirectTo') as string || '/dashboard';
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirectTo,
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case "CredentialsSignin":
-          return "Invalid credentials.";
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
         default:
-          return "Something went wrong.";
+          return 'Something went wrong.';
       }
     }
     throw error;
   }
 }
 
-export async function createUser(prevState: UserState, formData: FormData) {
-  const validated = UserRegistrationSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-    name: formData.get("name"),
-    role: formData.get("role"),
+const CreateProductSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  price: z.coerce.number().positive("Price must be positive"),
+  category: z.string().min(1, "Category is required"),
+  image_url: z.string().optional(),
+  video_url: z.string().optional(),
+});
+
+export async function createProduct(prevState: any, formData: FormData) {
+  const validatedFields = CreateProductSchema.safeParse({
+    name: formData.get('name'),
+    description: formData.get('description'),
+    price: formData.get('price'),
+    category: formData.get('category'),
+    image_url: formData.get('image_url'),
+    video_url: formData.get('video_url'),
   });
 
-  if (!validated.success) {
+  if (!validatedFields.success) {
     return {
-      errors: validated.error.flatten().fieldErrors,
-      message: "Invalid registration fields.",
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Failed to create product.',
     };
   }
 
-  const { email, password, name, role } = validated.data;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const id = uuidv4();
+  const { name, description, price, category, image_url, video_url } = validatedFields.data;
 
   try {
     await sql`
-      INSERT INTO wig_users (id, email, password, name, role)
-      VALUES (${id}, ${email}, ${hashedPassword}, ${name}, ${role})
+      INSERT INTO wig_products (name, description, price, category, image_url, video_url)
+      VALUES (${name}, ${description}, ${price}, ${category}, ${image_url || null}, ${video_url || null})
     `;
-    return { message: "User registered successfully." };
   } catch (error) {
-    return { message: "Database Error: Failed to register user." };
-  }
-}
-
-export async function createProduct(
-  prevState: ProductState,
-  formData: FormData
-): Promise<ProductState> {
-
-  const validated = ProductFormSchema.safeParse({
-    name: formData.get("name"),
-    description: formData.get("description"),
-    price: formData.get("price"),
-    category: formData.get("category"),
-    image_url: formData.get("image_url"),
-    video_url: formData.get("video_url") 
-  });
-
-  if (!validated.success) {
+    console.error('Database Error:', error);
     return {
-      errors: validated.error.flatten().fieldErrors,
-      message: "Invalid product fields.",
+      errors: {},
+      message: 'Database Error: Failed to create product.',
     };
   }
 
-  const { name, description, price, category, image_url, video_url } = validated.data;
-  const id = uuidv4();
+  redirect('/dashboard/products');
+}
+
+const CreateUserSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(['user', 'admin']).default('user'),
+});
+
+export async function createUser(prevState: any, formData: FormData) {
+  const validatedFields = CreateUserSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    role: formData.get('role') || 'user',
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Failed to create user.',
+    };
+  }
+
+  const { name, email, password, role } = validatedFields.data;
 
   try {
-    await sql`
-      INSERT INTO wig_products (id, name, description, price, category, image_url, video_url)
-      VALUES (${id}, ${name}, ${description}, ${price}, ${category}, ${image_url || null}, ${video_url || null})
-`;
+    // Hash the password
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    revalidatePath("/dashboard/products");
-    return { message: "Product created successfully." };
+    // Check if user already exists
+    const existingUser = await sql`
+      SELECT id FROM wig_users WHERE email = ${email}
+    `;
+
+    if (existingUser.length > 0) {
+      return {
+        errors: { email: ['User with this email already exists'] },
+        message: 'User already exists.',
+      };
+    }
+
+    // Create the user
+    await sql`
+      INSERT INTO wig_users (name, email, password, role)
+      VALUES (${name}, ${email}, ${hashedPassword}, ${role})
+    `;
+
+    return {
+      errors: {},
+      message: 'User created successfully! You can now log in.',
+    };
   } catch (error) {
-    console.error("Product creation failed:", error);
-    return { message: "Database or upload error: Failed to create product." };
+    console.error('Database Error:', error);
+    return {
+      errors: {},
+      message: 'Database Error: Failed to create user.',
+    };
   }
 }
 
+const CreateReviewSchema = z.object({
+  productId: z.string().min(1, "Product ID is required"),
+  userId: z.string().min(1, "User ID is required"),
+  review: z.string().min(1, "Review is required"),
+  rating: z.coerce.number().min(1).max(5, "Rating must be between 1 and 5"),
+});
+
+export async function createReview(prevState: State, formData: FormData): Promise<State> {
+  const validatedFields = CreateReviewSchema.safeParse({
+    productId: formData.get('productId'),
+    userId: formData.get('userId'),
+    review: formData.get('review'),
+    rating: formData.get('rating'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Failed to create review.',
+    };
+  }
+
+  const { productId, userId, review, rating } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO wig_ratings (product_id, user_id, review, rating, created_at)
+      VALUES (${productId}, ${userId}, ${review}, ${rating}, NOW())
+    `;
+
+    return {
+      message: 'Review created successfully!',
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return {
+      errors: {},
+      message: 'Database Error: Failed to create review.',
+    };
+  }
+}

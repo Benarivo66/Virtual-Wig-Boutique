@@ -1,15 +1,10 @@
 import React from "react";
-import { signOut } from "@/auth";
+import { handleSignOut } from "@/app/lib/actions";
 import styles from "./SignOut.module.css";
 
 function SignOut() {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut({ redirectTo: "/" });
-      }}
-    >
+    <form action={handleSignOut}>
       <button className={styles.signOutButton}>
         {/* <PowerIcon className="w-6" /> */}
         <div className={styles.signOutText}>Sign Out</div>

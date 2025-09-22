@@ -24,7 +24,7 @@ function CartPage() {
               {cart.map((item) => (
                 <li key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
                   <div>
-                    <span className="font-semibold text-lg text-gray-800">{item.title}</span>
+                    <span className="font-semibold text-lg text-gray-800">{item.name}</span>
                     <span className="block text-sm text-gray-500">
                       {item.quantity} × ${item.price}
                     </span>

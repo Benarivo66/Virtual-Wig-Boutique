@@ -1,7 +1,161 @@
-.products{
+/* Legacy products grid - keeping for backward compatibility */
+.products {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 16px;
     padding: 16px;
 }
 
+/* Homepage specific styles */
+.homepage-container {
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+.section-spacing {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error states */
+.error-container {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: #dc2626;
+}
+
+/* Filter info banner */
+.filter-info-banner {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Promotional section */
+.promo-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.promo-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.promo-section p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.promo-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.promo-button {
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.promo-button.primary {
+    background-color: white;
+    color: #667eea;
+}
+
+.promo-button.primary:hover {
+    background-color: #f8f9ff;
+    transform: translateY(-2px);
+}
+
+.promo-button.secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.promo-button.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.75rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .promo-section {
+        padding: 1.5rem;
+    }
+
+    .promo-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .promo-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .promo-button {
+        width: 100%;
+        max-width: 200px;
+    }
+}
