@@ -3,7 +3,7 @@ import { authConfig } from './auth.config';
 
 export default NextAuth(authConfig).auth;
 
-
 export const config = {
-  matcher: ['/admin/:path*', '/me']
+  // Protect admin routes, user account, and checkout
+  matcher: ['/admin/:path*', '/me', '/checkout/:path*'],
 };

@@ -218,37 +218,8 @@ export default function Home() {
           />
         </section>
 
-        {/* Promotional Banners */}
-        <section className="section-spacing promotional">
-          {/* Main promotional banner */}
-          <PromotionalBanner
-            title="Limited Time Offer!"
-            description="Get 20% off your first purchase! Use code WELCOME20 at checkout. Free shipping on orders over $50."
-            primaryButtonText="Shop Now"
-            secondaryButtonText="Learn More"
-            onPrimaryClick={handlePromotionalAction}
-            onSecondaryClick={handleLearnMore}
-            backgroundColor="from-purple-600 to-pink-600"
-            loading={loading}
-          />
-
-          {/* Secondary promotional banner */}
-          {!loading && products.length > 0 && (
-            <PromotionalBanner
-              title="New Collection Alert! 🎉"
-              description="Discover our latest arrivals featuring premium quality wigs in trending styles. Perfect for every occasion."
-              primaryButtonText="Explore New Arrivals"
-              onPrimaryClick={handlePromotionalAction}
-              backgroundColor="from-emerald-500 to-teal-600"
-              showCloseButton={true}
-            />
-          )}
-        </section>
-
-        {/* Section Divider */}
         <div className="section-divider"></div>
 
-        {/* Search Results Info */}
         {hasActiveFilters && (
           <section className="spacing-md">
             <div className="filter-info-banner">
@@ -303,6 +274,19 @@ export default function Home() {
                 : "We couldn't find any products to display. Please try again later."
             }
           />
+        </section>
+
+        <section className="section-spacing promotional">
+          {!loading && products.length > 0 && (
+            <PromotionalBanner
+              title="New Collection Alert! 🎉"
+              description="Discover our latest arrivals featuring premium quality wigs in trending styles. Perfect for every occasion."
+              primaryButtonText="Explore New Arrivals"
+              onPrimaryClick={handlePromotionalAction}
+              backgroundColor="from-emerald-500 to-teal-600"
+              showCloseButton={true}
+            />
+          )}
         </section>
       </main>
     </div>

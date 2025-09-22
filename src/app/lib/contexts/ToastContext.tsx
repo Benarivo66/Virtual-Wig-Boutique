@@ -2,11 +2,12 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import ToastContainer, { ToastData } from '../../ui/Toast/ToastContainer';
-import { ToastType } from '../../ui/Toast/Toast';
+import { ToastType, ToastAction } from '../../ui/Toast/Toast';
 
 interface ToastOptions {
     duration?: number;
     showCloseButton?: boolean;
+    actions?: ToastAction[];
 }
 
 interface ToastContextType {
@@ -36,7 +37,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
     const [toasts, setToasts] = useState<ToastData[]>([]);
 
     const generateId = useCallback(() => {
-        return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        return `toast-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     }, []);
 
     const showToast = useCallback((
@@ -53,6 +54,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
             message,
             duration: options.duration ?? 5000,
             showCloseButton: options.showCloseButton ?? true,
+            actions: options.actions,
         };
 
         setToasts(prevToasts => {

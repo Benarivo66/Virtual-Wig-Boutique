@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { FaStar, FaRegStar } from "react-icons/fa";
-import { addToCart } from "@/app/lib/cart";
+import { FaStar, FaRegStar, FaSpinner, FaCheck, FaShoppingCart } from "react-icons/fa";
 import { ProductField } from "@/app/lib/definitions";
+import { useCart } from "@/app/lib/contexts/CartContext";
+import { useToast } from "@/app/lib/contexts/ToastContext";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: ProductField;
@@ -28,6 +30,10 @@ export default function ProductCard({
     image_url,
     video_url
   } = product;
+
+  const { addItem } = useCart();
+  const { showSuccess, showError } = useToast();
+  const [addToCartState, setAddToCartState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   // Format price with proper currency formatting
   const formatPrice = (price: number): string => {
@@ -117,6 +123,110 @@ export default function ProductCard({
       onClick(id);
     } else {
       window.location.href = `/admin/product/${id}`;
+    }
+  };
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (addToCartState === 'loading') return;
+
+    setAddToCartState('loading');
+
+    try {
+      await addItem(product, 1);
+      setAddToCartState('success');
+
+      // Show success toast with quick actions
+      showSuccess(
+        'Added to Cart!',
+        `${name} has been added to your cart.`,
+        {
+          duration: 6000,
+          actions: [
+            {
+              label: 'View Cart',
+              onClick: () => {
+                window.location.href = '/cart';
+              },
+              variant: 'primary'
+            },
+            {
+              label: 'Continue Shopping',
+              onClick: () => {
+                // Just close the toast, user stays on current page
+              },
+              variant: 'secondary'
+            }
+          ]
+        }
+      );
+
+      // Reset state after animation
+      setTimeout(() => {
+        setAddToCartState('idle');
+      }, 2000);
+
+    } catch (error) {
+      setAddToCartState('error');
+      showError(
+        'Failed to Add Item',
+        'There was an error adding the item to your cart. Please try again.',
+        { duration: 5000 }
+      );
+
+      // Reset state after showing error
+      setTimeout(() => {
+        setAddToCartState('idle');
+      }, 3000);
+    }
+  };
+
+  const getAddToCartButtonContent = () => {
+    switch (addToCartState) {
+      case 'loading':
+        return (
+          <>
+            <FaSpinner className="animate-spin mr-2" />
+            Adding...
+          </>
+        );
+      case 'success':
+        return (
+          <>
+            <FaCheck className="mr-2" />
+            Added!
+          </>
+        );
+      case 'error':
+        return (
+          <>
+            <FaShoppingCart className="mr-2" />
+            Try Again
+          </>
+        );
+      default:
+        return (
+          <>
+            <FaShoppingCart className="mr-2" />
+            Add to Cart
+          </>
+        );
+    }
+  };
+
+  const getAddToCartButtonStyles = () => {
+    const baseStyles = "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 transform touch-manipulation min-h-[44px] flex items-center justify-center";
+
+    switch (addToCartState) {
+      case 'loading':
+        return `${baseStyles} bg-blue-400 text-white cursor-not-allowed`;
+      case 'success':
+        return `${baseStyles} bg-green-600 text-white scale-105`;
+      case 'error':
+        return `${baseStyles} bg-red-600 text-white hover:bg-red-700 focus:ring-red-500`;
+      default:
+        return `${baseStyles} bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500 hover:scale-105`;
     }
   };
 
@@ -223,16 +333,12 @@ export default function ProductCard({
           </div>
 
           <button
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 touch-manipulation min-h-[44px]"
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product);
-              // You might want to replace this alert with a toast notification
-              alert(`Added ${name} to cart!`);
-            }}
+            className={getAddToCartButtonStyles()}
+            onClick={handleAddToCart}
+            disabled={addToCartState === 'loading'}
             aria-label={`Add ${name} to shopping cart`}
           >
-            Add to Cart
+            {getAddToCartButtonContent()}
           </button>
         </div>
       </div>

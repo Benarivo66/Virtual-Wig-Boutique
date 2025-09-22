@@ -5,6 +5,12 @@ import './Toast.css';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
+export interface ToastAction {
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary';
+}
+
 export interface ToastProps {
     id: string;
     type: ToastType;
@@ -13,6 +19,7 @@ export interface ToastProps {
     duration?: number;
     onClose: (id: string) => void;
     showCloseButton?: boolean;
+    actions?: ToastAction[];
 }
 
 const Toast: React.FC<ToastProps> = ({
@@ -23,6 +30,7 @@ const Toast: React.FC<ToastProps> = ({
     duration = 5000,
     onClose,
     showCloseButton = true,
+    actions = [],
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
@@ -94,6 +102,23 @@ const Toast: React.FC<ToastProps> = ({
                 <div className="toast__text">
                     <div className="toast__title">{title}</div>
                     {message && <div className="toast__message">{message}</div>}
+                    {actions.length > 0 && (
+                        <div className="toast__actions">
+                            {actions.map((action, index) => (
+                                <button
+                                    key={index}
+                                    className={`toast__action toast__action--${action.variant || 'secondary'}`}
+                                    onClick={() => {
+                                        action.onClick();
+                                        handleClose();
+                                    }}
+                                    type="button"
+                                >
+                                    {action.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 {showCloseButton && (
                     <button

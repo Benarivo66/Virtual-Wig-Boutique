@@ -17,14 +17,19 @@ export const authConfig = {
         '/cart'
       ];
 
+      // Allow product detail pages and other dynamic routes for guest browsing
+      const isProductRoute = pathname.startsWith('/product/');
+      const isApiRoute = pathname.startsWith('/api/');
+      const isStaticRoute = pathname.startsWith('/_next/') || pathname.startsWith('/images/') || pathname.startsWith('/favicon');
+
       const isPublicRoute = publicRoutes.includes(pathname);
 
-      if (isPublicRoute) {
+      if (isPublicRoute || isProductRoute || isApiRoute || isStaticRoute) {
         return true;
       }
 
       // Protected routes that require authentication
-      if (pathname.startsWith('/admin') || pathname === '/me') {
+      if (pathname.startsWith('/admin') || pathname === '/me' || pathname.startsWith('/checkout')) {
         return isLoggedIn;
       }
 

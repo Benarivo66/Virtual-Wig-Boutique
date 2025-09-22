@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Toast, { ToastProps } from './Toast';
+import Toast, { ToastProps, ToastAction } from './Toast';
 import './ToastContainer.css';
 
 export interface ToastData {
@@ -11,6 +11,7 @@ export interface ToastData {
     message?: string;
     duration?: number;
     showCloseButton?: boolean;
+    actions?: ToastAction[];
 }
 
 interface ToastContainerProps {
@@ -44,6 +45,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
                     duration={toast.duration}
                     onClose={onRemoveToast}
                     showCloseButton={toast.showCloseButton}
+                    actions={toast.actions}
                 />
             ))}
         </div>

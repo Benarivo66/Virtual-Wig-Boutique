@@ -24,7 +24,20 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    const redirectTo = formData.get('redirectTo') as string || '/admin';
+    let redirectTo = formData.get('redirectTo') as string || '/';
+
+    // Decode the URL if it's encoded
+    try {
+      redirectTo = decodeURIComponent(redirectTo);
+    } catch {
+      // If decoding fails, use the original value
+    }
+
+    // Ensure the redirect URL is safe and starts with /
+    if (!redirectTo.startsWith('/')) {
+      redirectTo = '/';
+    }
+
     await signIn('credentials', {
       email: formData.get('email'),
       password: formData.get('password'),
@@ -35,8 +48,10 @@ export async function authenticate(
       switch (error.type) {
         case 'CredentialsSignin':
           return 'Invalid credentials.';
+        case 'CallbackRouteError':
+          return 'Authentication failed. Please try again.';
         default:
-          return 'Something went wrong.';
+          return 'Something went wrong. Please try again.';
       }
     }
     throw error;

@@ -7,7 +7,7 @@ import AuthForm from "../ui/AuthForm/AuthForm";
 export default function AuthPage() {
     const [mode, setMode] = useState<"login" | "register">("login");
     const searchParams = useSearchParams();
-    const returnUrl = searchParams.get("returnUrl") || "/";
+    const returnUrl = searchParams.get("callbackUrl") || searchParams.get("returnUrl") || "/";
 
     // Check if there's a preferred mode in URL params
     useEffect(() => {

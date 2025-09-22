@@ -6,7 +6,13 @@ export type CartItem = ProductField & { quantity: number };
 export function getCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    // Ensure price is a number for each item
+    return cart.map((item: any) => ({
+      ...item,
+      price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+      quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+    }));
   } catch {
     return [];
   }
@@ -51,7 +57,11 @@ export function getTotalItems(cart: CartItem[]): number {
 }
 
 export function getTotalPrice(cart: CartItem[]): number {
-  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  return cart.reduce((total, item) => {
+    const price = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+    const quantity = typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity;
+    return total + (price * quantity);
+  }, 0);
 }
 
 export function clearCart() {
