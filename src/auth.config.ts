@@ -47,6 +47,8 @@ export const authConfig = {
 
       const publicRoutes = [
         '/',
+        '/dashboard/products',
+        '/dashboard/product/create'
       ];
 
       const isPublicRoute = publicRoutes.includes(pathname);

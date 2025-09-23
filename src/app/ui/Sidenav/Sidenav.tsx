@@ -16,6 +16,15 @@ function Sidenav() {
             View Products
           </Link>
         </li>
+        <li>
+          <Link
+            className={styles.sidenavLink}
+            href="/dashboard/product/create"
+            aria-label="create products"
+          >
+            Create a product
+          </Link>
+        </li>
       </ul>
     </nav>
   );

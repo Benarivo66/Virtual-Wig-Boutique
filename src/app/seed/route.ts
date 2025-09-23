@@ -5,10 +5,16 @@ import { users, products } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
+// async function resetDatabase(sql: postgres.Sql) {
+//   await sql`DROP TABLE IF EXISTS wig_products;`;
+//   await sql`DROP TABLE IF EXISTS wig_users;`;
+// }
+
 async function resetDatabase(sql: postgres.Sql) {
-  await sql`DROP TABLE IF EXISTS wig_products;`;
-  await sql`DROP TABLE IF EXISTS wig_users;`;
+  await sql`TRUNCATE TABLE wig_products RESTART IDENTITY CASCADE;`;
+  await sql`TRUNCATE TABLE wig_users RESTART IDENTITY CASCADE;`;
 }
+
 
 async function seedUsers(sql: postgres.Sql) {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -60,11 +66,11 @@ export async function GET() {
   try {
     await sql.begin(async (sql) => {
       await resetDatabase(sql);
-      await seedUsers(sql);
-      await seedProducts(sql);
+      // await seedUsers(sql);
+      // await seedProducts(sql);
     });
 
-    return NextResponse.json({ message: 'Wigs seeded successfully' });
+    return NextResponse.json({ message: 'Database reset' });
   } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
