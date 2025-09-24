@@ -71,7 +71,7 @@
 //             <Image
 //               src={`/products/${product.image_url?.split("/").at(-1)?.toLowerCase()}`}
 //               alt={product.name}
-//               width={800}   
+//               width={800}
 //               height={600}
 //               className="w-full h-64 object-contain rounded-xl bg-tertiary2 p-2"
 //             />
@@ -87,42 +87,80 @@
 //   );
 // }
 
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { ProductField } from "@/app/lib/definitions";
-import ProductCard from "@/app/ui/ProductCard";
+import { useEffect, useState } from "react"
+import { ProductField } from "@/app/lib/definitions"
+import ProductCard from "@/app/ui/ProductCard"
 
-export default function ProductsPage({ products }: { products: ProductField[] }) {
-  const [filtered, setFiltered] = useState(products);
-  const [category, setCategory] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+export default function ProductsPage({
+  products,
+}: {
+  products: ProductField[]
+}) {
+  const [filtered, setFiltered] = useState(products)
+  const [category, setCategory] = useState("")
+  const [minPrice, setMinPrice] = useState("")
+  const [maxPrice, setMaxPrice] = useState("")
+  const [minRating, setMinRating] = useState("")
+  const [sortBy, setSortBy] = useState("newest")
 
   useEffect(() => {
-    const filteredProducts = products.filter((product) => {
+    let filteredProducts = products.filter((product) => {
       const matchesCategory = category
         ? product.category?.toLowerCase().includes(category.toLowerCase())
-        : true;
+        : true
 
       const matchesMinPrice = minPrice
         ? product.price >= parseFloat(minPrice)
-        : true;
+        : true
 
       const matchesMaxPrice = maxPrice
         ? product.price <= parseFloat(maxPrice)
-        : true;
+        : true
 
-      return matchesCategory && matchesMinPrice && matchesMaxPrice;
-    });
+      const matchesRating = minRating
+        ? (product.average_rating || 0) >= parseFloat(minRating)
+        : true
 
-    setFiltered(filteredProducts);
-  }, [category, minPrice, maxPrice, products]);
+      return (
+        matchesCategory && matchesMinPrice && matchesMaxPrice && matchesRating
+      )
+    })
+
+    // Apply sorting
+    if (sortBy === "newest") {
+      filteredProducts = [...filteredProducts].sort((a, b) => {
+        const ratingA = a.average_rating || 0
+        const ratingB = b.average_rating || 0
+        return ratingB - ratingA
+      })
+    } else if (sortBy === "price-low") {
+      filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price)
+    } else if (sortBy === "price-high") {
+      filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price)
+    } else if (sortBy === "rating") {
+      filteredProducts = [...filteredProducts].sort(
+        (a, b) => (b.average_rating || 0) - (a.average_rating || 0)
+      )
+    }
+
+    setFiltered(filteredProducts)
+  }, [category, minPrice, maxPrice, minRating, sortBy, products])
+
+  const searchParams = new URLSearchParams(window.location.search)
+  const categoryParam = searchParams.get("category")
+
+  useEffect(() => {
+    if (categoryParam) {
+      setCategory(categoryParam)
+    }
+  }, [categoryParam])
 
   return (
     <div className="p-4">
       {/* Filter Inputs */}
-      <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <input
           type="text"
           placeholder="Filter by category"
@@ -144,17 +182,34 @@ export default function ProductsPage({ products }: { products: ProductField[] })
           onChange={(e) => setMaxPrice(e.target.value)}
           className="border p-2 rounded w-full"
         />
+        <input
+          type="number"
+          placeholder="Min rating"
+          min="0"
+          max="5"
+          step="0.5"
+          value={minRating}
+          onChange={(e) => setMinRating(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="border p-2 rounded w-full"
+        >
+          <option value="newest">New Arrivals</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
       </div>
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-          />
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
-  );
+  )
 }

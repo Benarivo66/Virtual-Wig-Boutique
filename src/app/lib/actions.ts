@@ -1,60 +1,61 @@
-"use server";
+"use server"
 
-import { signIn, signOut } from "@/auth";
-import { redirect } from "next/navigation";
-import { z } from "zod";
-import postgres from 'postgres';
-import { AuthError } from "next-auth";
+import { signIn, signOut } from "@/auth"
+import { redirect } from "next/navigation"
+import { z } from "zod"
+import postgres from "postgres"
+import { AuthError } from "next-auth"
 
 export type State = {
   errors?: {
-    [key: string]: string[];
-  };
-  message?: string | null;
-};
+    [key: string]: string[]
+  }
+  message?: string | null
+}
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
 
 export async function handleSignOut() {
-  await signOut({ redirectTo: "/" });
+  await signOut({ redirectTo: "/" })
 }
 
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData,
+  formData: FormData
 ) {
   try {
-    let redirectTo = formData.get('redirectTo') as string || '/';
+    let redirectTo = (formData.get("redirectTo") as string) || "/"
 
     // Decode the URL if it's encoded
     try {
-      redirectTo = decodeURIComponent(redirectTo);
+      redirectTo = decodeURIComponent(redirectTo)
     } catch {
       // If decoding fails, use the original value
     }
 
     // Ensure the redirect URL is safe and starts with /
-    if (!redirectTo.startsWith('/')) {
-      redirectTo = '/';
+    if (!redirectTo.startsWith("/")) {
+      redirectTo = "/"
     }
 
-    await signIn('credentials', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      redirectTo,
-    });
+    await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: true,
+      callbackUrl: redirectTo,
+    })
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        case 'CallbackRouteError':
-          return 'Authentication failed. Please try again.';
+        case "CredentialsSignin":
+          return "Invalid credentials."
+        case "CallbackRouteError":
+          return "Authentication failed. Please try again."
         default:
-          return 'Something went wrong. Please try again.';
+          return "Something went wrong. Please try again."
       }
     }
-    throw error;
+    throw error
   }
 }
 
@@ -65,100 +66,103 @@ const CreateProductSchema = z.object({
   category: z.string().min(1, "Category is required"),
   image_url: z.string().optional(),
   video_url: z.string().optional(),
-});
+})
 
 export async function createProduct(prevState: any, formData: FormData) {
   const validatedFields = CreateProductSchema.safeParse({
-    name: formData.get('name'),
-    description: formData.get('description'),
-    price: formData.get('price'),
-    category: formData.get('category'),
-    image_url: formData.get('image_url'),
-    video_url: formData.get('video_url'),
-  });
+    name: formData.get("name"),
+    description: formData.get("description"),
+    price: formData.get("price"),
+    category: formData.get("category"),
+    image_url: formData.get("image_url"),
+    video_url: formData.get("video_url"),
+  })
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing or invalid fields. Failed to create product.',
-    };
+      message: "Missing or invalid fields. Failed to create product.",
+    }
   }
 
-  const { name, description, price, category, image_url, video_url } = validatedFields.data;
+  const { name, description, price, category, image_url, video_url } =
+    validatedFields.data
 
   try {
     await sql`
       INSERT INTO wig_products (name, description, price, category, image_url, video_url)
-      VALUES (${name}, ${description}, ${price}, ${category}, ${image_url || null}, ${video_url || null})
-    `;
+      VALUES (${name}, ${description}, ${price}, ${category}, ${
+      image_url || null
+    }, ${video_url || null})
+    `
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error("Database Error:", error)
     return {
       errors: {},
-      message: 'Database Error: Failed to create product.',
-    };
+      message: "Database Error: Failed to create product.",
+    }
   }
 
-  redirect('/admin/products');
+  redirect("/admin/products")
 }
 
 const CreateUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(['user', 'admin']).default('user'),
-});
+  role: z.enum(["user", "admin"]).default("user"),
+})
 
 export async function createUser(prevState: any, formData: FormData) {
   const validatedFields = CreateUserSchema.safeParse({
-    name: formData.get('name'),
-    email: formData.get('email'),
-    password: formData.get('password'),
-    role: formData.get('role') || 'user',
-  });
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    role: formData.get("role") || "user",
+  })
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing or invalid fields. Failed to create user.',
-    };
+      message: "Missing or invalid fields. Failed to create user.",
+    }
   }
 
-  const { name, email, password, role } = validatedFields.data;
+  const { name, email, password, role } = validatedFields.data
 
   try {
     // Hash the password
-    const bcrypt = await import('bcrypt');
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const bcrypt = await import("bcrypt")
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Check if user already exists
     const existingUser = await sql`
       SELECT id FROM wig_users WHERE email = ${email}
-    `;
+    `
 
     if (existingUser.length > 0) {
       return {
-        errors: { email: ['User with this email already exists'] },
-        message: 'User already exists.',
-      };
+        errors: { email: ["User with this email already exists"] },
+        message: "User already exists.",
+      }
     }
 
     // Create the user
     await sql`
       INSERT INTO wig_users (name, email, password, role)
       VALUES (${name}, ${email}, ${hashedPassword}, ${role})
-    `;
+    `
 
     return {
       errors: {},
-      message: 'User created successfully! You can now log in.',
-    };
+      message: "User created successfully! You can now log in.",
+    }
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error("Database Error:", error)
     return {
       errors: {},
-      message: 'Database Error: Failed to create user.',
-    };
+      message: "Database Error: Failed to create user.",
+    }
   }
 }
 
@@ -167,39 +171,42 @@ const CreateReviewSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
   review: z.string().min(1, "Review is required"),
   rating: z.coerce.number().min(1).max(5, "Rating must be between 1 and 5"),
-});
+})
 
-export async function createReview(prevState: State, formData: FormData): Promise<State> {
+export async function createReview(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
   const validatedFields = CreateReviewSchema.safeParse({
-    productId: formData.get('productId'),
-    userId: formData.get('userId'),
-    review: formData.get('review'),
-    rating: formData.get('rating'),
-  });
+    productId: formData.get("productId"),
+    userId: formData.get("userId"),
+    review: formData.get("review"),
+    rating: formData.get("rating"),
+  })
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing or invalid fields. Failed to create review.',
-    };
+      message: "Missing or invalid fields. Failed to create review.",
+    }
   }
 
-  const { productId, userId, review, rating } = validatedFields.data;
+  const { productId, userId, review, rating } = validatedFields.data
 
   try {
     await sql`
       INSERT INTO wig_ratings (product_id, user_id, review, rating, created_at)
       VALUES (${productId}, ${userId}, ${review}, ${rating}, NOW())
-    `;
+    `
 
     return {
-      message: 'Review created successfully!',
-    };
+      message: "Review created successfully!",
+    }
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error("Database Error:", error)
     return {
       errors: {},
-      message: 'Database Error: Failed to create review.',
-    };
+      message: "Database Error: Failed to create review.",
+    }
   }
 }

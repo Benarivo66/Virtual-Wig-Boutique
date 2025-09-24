@@ -1,35 +1,31 @@
-"use client";
+"use client"
 
-import "./HeroCard.css";
-import Image from "next/image";
-import { useState } from "react";
+import "./HeroCard.css"
+import Image from "next/image"
+import { useState } from "react"
 
 function HeroComponent() {
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   const handleShopNow = () => {
-    // Scroll to products section
-    const productsSection = document.querySelector('[data-section="products"]');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // Fallback: scroll down by viewport height
-      window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
-    }
-  };
+    // Navigate to products page with new arrivals filter
+    window.location.href = "/products?category=New%20Arrivals"
+  }
 
   const handleLearnMore = () => {
     // Navigate to products page
-    window.location.href = '/admin/products';
-  };
+    window.location.href = "/products"
+  }
 
   const handleSpecialOffer = () => {
     // Copy promo code to clipboard and show notification
-    navigator.clipboard.writeText('WELCOME20').then(() => {
-      // Create a temporary notification
-      const notification = document.createElement('div');
-      notification.textContent = 'Promo code WELCOME20 copied to clipboard!';
-      notification.style.cssText = `
+    navigator.clipboard
+      .writeText("WELCOME20")
+      .then(() => {
+        // Create a temporary notification
+        const notification = document.createElement("div")
+        notification.textContent = "Promo code WELCOME20 copied to clipboard!"
+        notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
@@ -41,32 +37,33 @@ function HeroComponent() {
         z-index: 9999;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         animation: slideIn 0.3s ease-out;
-      `;
+      `
 
-      // Add animation keyframes
-      if (!document.querySelector('#promo-notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'promo-notification-styles';
-        style.textContent = `
+        // Add animation keyframes
+        if (!document.querySelector("#promo-notification-styles")) {
+          const style = document.createElement("style")
+          style.id = "promo-notification-styles"
+          style.textContent = `
           @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
           }
-        `;
-        document.head.appendChild(style);
-      }
+        `
+          document.head.appendChild(style)
+        }
 
-      document.body.appendChild(notification);
+        document.body.appendChild(notification)
 
-      // Remove notification after 3 seconds
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }).catch(() => {
-      // Fallback: scroll to products section
-      handleShopNow();
-    });
-  };
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          notification.remove()
+        }, 3000)
+      })
+      .catch(() => {
+        // Fallback: scroll to products section
+        handleShopNow()
+      })
+  }
 
   return (
     <div className="hero-component">
@@ -76,7 +73,8 @@ function HeroComponent() {
             Transform Your Look with Premium Wigs
           </h1>
           <p className="hero-component__left__wrapper__sub-text">
-            Discover our curated collection of high-quality wigs. From elegant straight styles to voluminous curls, find your perfect match.
+            Discover our curated collection of high-quality wigs. From elegant
+            straight styles to voluminous curls, find your perfect match.
           </p>
           <div className="hero-component__left__wrapper__features">
             <div className="feature-item">
@@ -99,7 +97,9 @@ function HeroComponent() {
               type="button"
               aria-label="Browse our product collection"
             >
-              <span className="button-icon" aria-hidden="true">🛍️</span>
+              <span className="button-icon" aria-hidden="true">
+                🛍️
+              </span>
               Shop Now
             </button>
             <button
@@ -108,13 +108,18 @@ function HeroComponent() {
               type="button"
               aria-label="View all products in our collection"
             >
-              <span className="button-icon" aria-hidden="true">👀</span>
+              <span className="button-icon" aria-hidden="true">
+                👀
+              </span>
               View Collection
             </button>
           </div>
           <div className="hero-component__left__wrapper__offer">
             <p className="offer-text">
-              <span className="offer-highlight" aria-hidden="true">🎉 Special Offer:</span> Get 20% off your first order with code <strong>WELCOME20</strong>
+              <span className="offer-highlight" aria-hidden="true">
+                🎉 Special Offer:
+              </span>{" "}
+              Get 20% off your first order with code <strong>WELCOME20</strong>
             </p>
             <button
               className="offer-button"
@@ -133,7 +138,9 @@ function HeroComponent() {
             width={1000}
             height={667}
             priority
-            className={`hero-component__right__hero-image ${imageLoaded ? 'loaded' : ''}`}
+            className={`hero-component__right__hero-image ${
+              imageLoaded ? "loaded" : ""
+            }`}
             src="/images/hero-image.webp"
             alt="Beautiful woman showcasing premium wig collection at Virtual Wig Boutique"
             onLoad={() => setImageLoaded(true)}
@@ -146,7 +153,7 @@ function HeroComponent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default HeroComponent;
+export default HeroComponent
