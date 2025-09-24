@@ -22,7 +22,8 @@
 }
 
 html {
-  margin-top: 6rem
+  margin-top: 6rem;
+  scroll-behavior: smooth;
 }
 
 html,
@@ -37,6 +38,38 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* Mobile-first responsive typography */
+@media (max-width: 480px) {
+  html {
+    margin-top: 4.5rem;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  html {
+    margin-top: 5rem;
+  }
+
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 769px) {
+  html {
+    margin-top: 6rem;
+  }
+
+  body {
+    font-size: 16px;
+  }
 }
 
 * {
@@ -69,5 +102,69 @@ h3 {
   html {
     color-scheme: dark;
   }
+}
 
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #000000;
+    --color-secondary: #ffffff;
+  }
+}
+
+/* Focus visible improvements */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Touch target improvements for mobile */
+@media (max-width: 768px) {
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

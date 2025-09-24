@@ -151,14 +151,7 @@ export default function ProductsPage({ products }: { products: ProductField[] })
         {filtered.map((product) => (
           <ProductCard
             key={product.id}
-            id={product.id}
-            name={product.name}
-            description={product.description}
-            price={product.price}
-            average_rating={product.average_rating || undefined}
-            image_url={product.image_url || ""}
-            category={product.category}
-            video_url={product.video_url || ""}
+            product={product}
           />
         ))}
       </div>

@@ -1,9 +1,11 @@
 import postgres from 'postgres';
 import {
-    ProductField
+  ProductField
 } from './definitions';
+import { products as placeholderProducts } from './placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
 export async function fetchProducts() {
   try {
     const products = await sql<ProductField[]>`
@@ -18,4 +20,29 @@ export async function fetchProducts() {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all products.');
   }
+}
+
+export async function fetchProductById(id: string) {
+  try {
+    const product = await sql<ProductField[]>`
+      SELECT
+       *
+      FROM wig_products
+      WHERE id = ${id}
+    `;
+
+    return product[0] || null;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch product.');
+  }
+}
+
+export function getUniqueCategories(products: ProductField[]): string[] {
+  const categories = products.map(product => product.category);
+  return [...new Set(categories)].sort();
+}
+
+export function getCategoriesFromPlaceholderData(): string[] {
+  return getUniqueCategories(placeholderProducts as ProductField[]);
 }
