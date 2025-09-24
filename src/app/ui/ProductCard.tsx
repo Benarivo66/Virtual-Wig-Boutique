@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { FaRegStar } from "react-icons/fa";
-import { addToCart } from "@/app/lib/cart";
+import Image from "next/image"
+import { FaRegStar } from "react-icons/fa"
+import { addToCart } from "@/app/lib/cart"
+import { Button } from "@/app/ui/Button"
 
 type ProductCardProps = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  average_rating?: number | null;
-  image_url: string;
+  id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  average_rating?: number | null
+  image_url: string
   video_url: string | null
-  
-};
+}
 
 export default function ProductCard({
   id,
@@ -24,7 +24,7 @@ export default function ProductCard({
   average_rating,
   image_url,
   video_url,
-  category
+  category,
 }: ProductCardProps) {
   const product = {
     id,
@@ -34,37 +34,41 @@ export default function ProductCard({
     category,
     image_url,
     video_url,
-    average_rating
-  };
+    average_rating,
+  }
 
   return (
     <div className="bg-tertiary2 shadow-md rounded-2xl p-4 flex flex-col">
       <a href={`/product/${id}`} className="group">
         <div className="w-full bg-tertiary2 flex flex-col items-center justify-center rounded-xl overflow-hidden">
-  {video_url && (
-    <video
-      src={video_url}
-      controls
-      className="object-contain max-h-64 w-auto mb-2 rounded-lg"
-    />
-  )}
-  {image_url && (
-    <Image
-      src={image_url}
-      alt={name}
-      width={400}
-      height={320}
-      className="object-contain max-h-64 w-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
-    />
-  )}
-</div>
-
+          {video_url && (
+            <video
+              src={video_url}
+              controls
+              className="object-contain max-h-64 w-auto mb-2 rounded-lg"
+            />
+          )}
+          {image_url && (
+            <Image
+              src={image_url}
+              alt={name}
+              width={400}
+              height={320}
+              className="object-contain max-h-64 w-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
+            />
+          )}
+        </div>
 
         {/* Details */}
         <div className="mt-4">
           <h2 className="text-xl font-semibold text-tertiary1">{name}</h2>
-          <p className="text-sm text-tertiary1 mt-1 line-clamp-2">{description}</p>
-          <p className="text-sm text-tertiary1 mt-1 line-clamp-2"><b>Category: </b>{category}</p>
+          <p className="text-sm text-tertiary1 mt-1 line-clamp-2">
+            {description}
+          </p>
+          <p className="text-sm text-tertiary1 mt-1 line-clamp-2">
+            <b>Category: </b>
+            {category}
+          </p>
           <div className="flex items-center justify-between mt-3">
             <span className="text-lg font-bold text-secondary">${price}</span>
             {average_rating && (
@@ -77,16 +81,16 @@ export default function ProductCard({
       </a>
 
       {/* Add to Cart */}
-      <button
+      <Button
         className="mt-4 py-2 px-4 rounded-lg bg-secondary text-white font-medium hover:bg-primary transition"
         onClick={(e) => {
-          e.preventDefault();
-          addToCart(product);
-          alert(`Added ${name} to cart!`);
+          e.preventDefault()
+          addToCart(product)
+          alert(`Added ${name} to cart!`)
         }}
       >
         Add to Cart
-      </button>
+      </Button>
     </div>
-  );
+  )
 }
