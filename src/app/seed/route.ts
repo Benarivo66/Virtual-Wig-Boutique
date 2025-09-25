@@ -6,13 +6,13 @@ import { users, products } from '../lib/placeholder-data';
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 // async function resetDatabase(sql: postgres.Sql) {
-//   await sql`DROP TABLE IF EXISTS wig_products;`;
-//   await sql`DROP TABLE IF EXISTS wig_users;`;
+//   await sql`DROP TABLE IF EXISTS products;`;
+//   await sql`DROP TABLE IF EXISTS users;`;
 // }
 
 async function resetDatabase(sql: postgres.Sql) {
-  await sql`TRUNCATE TABLE wig_products RESTART IDENTITY CASCADE;`;
-  await sql`TRUNCATE TABLE wig_users RESTART IDENTITY CASCADE;`;
+  await sql`TRUNCATE TABLE products RESTART IDENTITY CASCADE;`;
+  await sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`;
 }
 
 
@@ -20,7 +20,7 @@ async function seedUsers(sql: postgres.Sql) {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await sql`
-    CREATE TABLE wig_users (
+    CREATE TABLE users (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email TEXT NOT NULL UNIQUE,
@@ -32,7 +32,7 @@ async function seedUsers(sql: postgres.Sql) {
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     await sql`
-      INSERT INTO wig_users (name, email, password, role)
+      INSERT INTO users (name, email, password, role)
       VALUES (${user.name}, ${user.email}, ${hashedPassword}, ${user.role})
       ON CONFLICT (email) DO NOTHING;
     `;
@@ -41,7 +41,7 @@ async function seedUsers(sql: postgres.Sql) {
 
 async function seedProducts(sql: postgres.Sql) {
   await sql`
-    CREATE TABLE wig_products (
+    CREATE TABLE products (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT NOT NULL,
@@ -55,7 +55,7 @@ async function seedProducts(sql: postgres.Sql) {
 
   for (const product of products) {
     await sql`
-      INSERT INTO wig_products (name, description, price, category, image_url, video_url, average_rating)
+      INSERT INTO products (name, description, price, category, image_url, video_url, average_rating)
       VALUES (${product.name}, ${product.description}, ${product.price}, ${product.category}, ${product.image_url}, ${product.video_url}, ${product.average_rating})
       ON CONFLICT (id) DO NOTHING;
     `;

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Virtual Wig Boutique",
     description: "Discover, buy, and sell unique items at Virtual Wig Boutique",
-    url: "https://handcrafted-haven22.vercel.app/",
+    url: "http://localhost:3000",
     siteName: "Virtual Wig Boutique",
     images: [
       {

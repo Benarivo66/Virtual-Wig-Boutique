@@ -13,7 +13,7 @@ function ProductDetails({ product }: { product: ProductField }) {
           height={667}
           className="product__image-wrapper__image"
           src={product.image_url || "/hero-image.jpg"}
-          alt="A duffle bag, dopp kit and ceramic mug sit atop a wood table in front of a wall of art prints."
+          alt={product.name}
           priority
           sizes="(max-width: 900px) 100vw, 66vw"
           quality={75}
@@ -22,7 +22,7 @@ function ProductDetails({ product }: { product: ProductField }) {
       <div className="product-details">
         <h1 className="product-details__title">{product.name}</h1>
         <div className="product-details__seller-name">
-          From {product.name}
+          From Our Store
         </div>
         <div className="product-details__description">
           {product.description || "No description available."}

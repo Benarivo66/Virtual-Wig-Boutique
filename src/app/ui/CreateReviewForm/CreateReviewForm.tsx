@@ -20,6 +20,7 @@ function CreateReviewForm({
     if (!userId) {
       e.preventDefault();
       alert("You must be signed in to submit a review.");
+      return;
     }
   }
 

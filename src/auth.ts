@@ -10,7 +10,7 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 async function getUser(email: string): Promise<UserField | undefined> {
   try {
-    const user = await sql<UserField[]>`SELECT * FROM wig_users WHERE email=${email}`;
+    const user = await sql<UserField[]>`SELECT * FROM users WHERE email=${email}`;
     console.log("User:", user);
     return user[0];
   } catch (error) {
@@ -42,4 +42,24 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  // ADD THESE CALLBACKS:
+  callbacks: {
+    async jwt({ token, user, account, profile }) {
+      // Persist the user ID to the token right after sign-in
+      if (user) {
+        token.id = user.id; // This adds the ID to the JWT token
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Send the user ID to the client session
+      if (token?.id && session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+  session: {
+    strategy: 'jwt', // Ensure JWT strategy is used
+  },
 });
