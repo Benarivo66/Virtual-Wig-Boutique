@@ -21,21 +21,20 @@ function ProductReviews({
           productReviews.map((review: any) => (
             <div key={review.id} className="review">
               <p className="star-ratings">
-                {Array.from({ length: review.star_rating }, (_, i) => (
+                {Array.from({ length: review.rating }, (_, i) => ( // Changed from review.rating to review.rating
                   <span key={i}>
                     <FaStar />
                   </span>
                 ))}
-                {Array.from({ length: 5 - review.star_rating }, (_, i) => (
+                {Array.from({ length: 5 - review.rating }, (_, i) => ( // Changed from review.rating to review.rating
                   <span key={i}>
                     <FaRegStar />
                   </span>
                 ))}
               </p>
               <h3 className="review_title">{review.title}</h3>
-
               <p className="review_content">{review.review}</p>
-              <p className="user">{review.name || "Anonymous"} </p>
+              <p className="user">{review.user_name || "Anonymous"} </p> {/* Changed from review.name to review.user_name */}
               <p className="date">
                 {new Date(review.created_at).toLocaleDateString()}
               </p>

@@ -42,4 +42,24 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  // ADD THESE CALLBACKS:
+  callbacks: {
+    async jwt({ token, user, account, profile }) {
+      // Persist the user ID to the token right after sign-in
+      if (user) {
+        token.id = user.id; // This adds the ID to the JWT token
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Send the user ID to the client session
+      if (token?.id && session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+  session: {
+    strategy: 'jwt', // Ensure JWT strategy is used
+  },
 });
