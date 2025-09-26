@@ -12,6 +12,7 @@ import {
     getTotalPrice,
     type CartItem
 } from '../cart';
+import { useAuth } from '../hooks/useAuth';
 
 interface CartContextType {
     items: CartItem[];
@@ -41,55 +42,126 @@ interface CartProviderProps {
 export function CartProvider({ children }: CartProviderProps) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const { user, isLoading: authLoading } = useAuth();
 
-    // Load cart from localStorage on mount
+    // Get user-specific cart key
+    const getCartKey = useCallback(() => {
+        return user ? `cart_${user.id}` : 'cart';
+    }, [user]);
+
+    // Load cart from localStorage when auth state changes
     useEffect(() => {
-        setItems(getCart());
-    }, []);
+        if (!authLoading) {
+            const cartKey = getCartKey();
+            if (typeof window !== 'undefined') {
+                try {
+                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                    const processedCart = cart.map((item: any) => ({
+                        ...item,
+                        price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+                        quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+                    }));
+                    setItems(processedCart);
+                } catch {
+                    setItems([]);
+                }
+            }
+        }
+    }, [user, authLoading, getCartKey]);
 
     // Calculate totals
     const totalItems = getTotalItems(items);
     const totalPrice = getTotalPrice(items);
 
-    // Refresh cart state from localStorage
+    // Refresh cart state from localStorage with user-specific key
     const refreshCart = useCallback(() => {
-        setItems(getCart());
-    }, []);
+        if (!authLoading) {
+            const cartKey = getCartKey();
+            if (typeof window !== 'undefined') {
+                try {
+                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                    const processedCart = cart.map((item: any) => ({
+                        ...item,
+                        price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+                        quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+                    }));
+                    setItems(processedCart);
+                } catch {
+                    setItems([]);
+                }
+            }
+        }
+    }, [authLoading, getCartKey]);
 
-    // Add item to cart
+    // Add item to cart with user-specific storage
     const addItem = useCallback(async (product: ProductField, quantity: number = 1) => {
+        if (authLoading) return;
+
         setIsLoading(true);
         try {
-            // Add multiple quantities if specified
-            for (let i = 0; i < quantity; i++) {
-                addToCartUtil(product);
+            const cartKey = getCartKey();
+            const currentCart = [...items];
+            const existingIndex = currentCart.findIndex(item => item.id === product.id);
+
+            if (existingIndex > -1) {
+                currentCart[existingIndex].quantity += quantity;
+            } else {
+                currentCart.push({ ...product, quantity });
             }
-            refreshCart();
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(cartKey, JSON.stringify(currentCart));
+            }
+            setItems(currentCart);
         } catch (error) {
             console.error('Error adding item to cart:', error);
             throw error;
         } finally {
             setIsLoading(false);
         }
-    }, [refreshCart]);
+    }, [items, authLoading, getCartKey]);
 
-    // Remove item from cart
+    // Remove item from cart with user-specific storage
     const removeItem = useCallback((productId: string) => {
-        removeItemUtil(productId);
-        refreshCart();
-    }, [refreshCart]);
+        if (authLoading) return;
 
-    // Update item quantity
+        const cartKey = getCartKey();
+        const updatedCart = items.filter(item => item.id !== productId);
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+        }
+        setItems(updatedCart);
+    }, [items, authLoading, getCartKey]);
+
+    // Update item quantity with user-specific storage
     const updateQuantity = useCallback((productId: string, quantity: number) => {
-        updateQuantityUtil(productId, quantity);
-        refreshCart();
-    }, [refreshCart]);
+        if (authLoading) return;
 
-    // Clear entire cart
+        const cartKey = getCartKey();
+        const updatedCart = items.map(item => {
+            if (item.id === productId) {
+                return quantity <= 0 ? null : { ...item, quantity };
+            }
+            return item;
+        }).filter(Boolean) as CartItem[];
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+        }
+        setItems(updatedCart);
+    }, [items, authLoading, getCartKey]);
+
+    // Clear entire cart with user-specific storage
     const clearCart = useCallback(() => {
-        clearCartUtil();
-        refreshCart();
-    }, [refreshCart]);
+        if (authLoading) return;
+
+        const cartKey = getCartKey();
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem(cartKey);
+        }
+        setItems([]);
+    }, [authLoading, getCartKey]);
 
     const value: CartContextType = {
         items,

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/app/lib/hooks/useAuth";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/app/lib/contexts/CartContext";
@@ -36,7 +36,7 @@ interface OrderSummary {
 }
 
 function CheckoutPage() {
-    const { data: session, status } = useSession();
+    const { user, isLoading: authLoading } = useAuth();
     const router = useRouter();
     const { items, totalItems, totalPrice, clearCart } = useCart();
     const { showSuccess, showError, showWarning } = useToast();
@@ -50,7 +50,7 @@ function CheckoutPage() {
     const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
         firstName: '',
         lastName: '',
-        email: session?.user?.email || '',
+        email: user?.email || '',
         phone: '',
         address: '',
         city: '',
@@ -80,9 +80,9 @@ function CheckoutPage() {
 
     // Authentication check
     useEffect(() => {
-        if (status === 'loading') return; // Still loading
+        if (authLoading) return; // Still loading
 
-        if (status === 'unauthenticated') {
+        if (!user) {
             // Clear any previous auth errors
             setAuthError(null);
 
@@ -96,19 +96,19 @@ function CheckoutPage() {
             return;
         }
 
-        if (status === 'authenticated') {
+        if (user) {
             // Clear any auth errors on successful authentication
             setAuthError(null);
 
             // Update email if user is authenticated
-            if (session?.user?.email && !shippingInfo.email) {
+            if (user.email && !shippingInfo.email) {
                 setShippingInfo(prev => ({
                     ...prev,
-                    email: session.user?.email || ''
+                    email: user.email || ''
                 }));
             }
         }
-    }, [status, session, router, shippingInfo.email, showWarning]);
+    }, [authLoading, user, router, shippingInfo.email, showWarning]);
 
     // Check if cart is empty
     useEffect(() => {
@@ -141,7 +141,7 @@ function CheckoutPage() {
     // Handle order submission
     const handlePlaceOrder = async () => {
         // Double-check authentication before processing order
-        if (status !== 'authenticated' || !session?.user) {
+        if (!user) {
             setAuthError("Authentication session expired. Please sign in again.");
             showError("Authentication Error", "Your session has expired. Please sign in again to continue.");
             router.push('/auth?callbackUrl=' + encodeURIComponent('/checkout'));
@@ -182,7 +182,7 @@ function CheckoutPage() {
     };
 
     // Loading state while checking authentication
-    if (status === 'loading') {
+    if (authLoading) {
         return (
             <div className="homepage-container min-h-screen">
                 <main className="content-wrapper flex items-center justify-center">

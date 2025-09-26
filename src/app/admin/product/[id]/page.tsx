@@ -1,7 +1,6 @@
 // import ProductDetails from "@/app/ui/ProductDetails/ProductDetails";
 // import ProductReviews from "@/app/ui/ProductReviews/ProductReviews";
 // import { fetchProductById, fetchRatingsAndReviewsByID } from "@/app/lib/data";
-// import { auth } from "@/auth";
 // import "./page.css";
 
 // type Props = {
@@ -12,8 +11,7 @@
 //   const { id } = await props.params;
 //   const product = await fetchProductById(id);
 //   const productReviews = await fetchRatingsAndReviewsByID(id);
-//   const session = await auth();
-//   const userId = session?.user?.id || "";
+//   const userId = "";
 
 //   return (
 //     <div className="product-page">

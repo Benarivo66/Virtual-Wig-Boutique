@@ -1,8 +1,9 @@
+"use client";
+
 import React from "react";
-import { FaSearch } from "react-icons/fa";
 import "./TopBar.css";
 import Link from "next/link";
-import { auth } from "@/auth";
+import { useAuth } from "@/app/lib/hooks/useAuth";
 import UserIcon from "../UserIcon";
 import TopBarClient from "./TopBarClient";
 import CartIcon from "../CartIcon";
@@ -12,14 +13,8 @@ interface TopBarProps {
   onSearch?: (query: string) => void;
 }
 
-export default async function TopBar({ showSearch = true, onSearch }: TopBarProps) {
-  const session = await auth();
-  const user = session?.user ? {
-    id: session.user.id as string,
-    name: session.user.name as string,
-    email: session.user.email as string,
-    role: (session.user as any).role as "user" | "admin"
-  } : null;
+export default function TopBar({ showSearch = true, onSearch }: TopBarProps) {
+  const { user } = useAuth();
 
   return (
     <header className="topbar" role="banner">

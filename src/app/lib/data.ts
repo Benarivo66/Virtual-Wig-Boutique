@@ -1,6 +1,7 @@
 import postgres from 'postgres';
 import {
-  ProductField
+  ProductField,
+  UserField
 } from './definitions';
 import { products as placeholderProducts } from './placeholder-data';
 
@@ -11,7 +12,7 @@ export async function fetchProducts() {
     const products = await sql<ProductField[]>`
       SELECT
        *
-      FROM wig_products
+      FROM products
       ORDER BY name ASC
     `;
 
@@ -27,7 +28,7 @@ export async function fetchProductById(id: string) {
     const product = await sql<ProductField[]>`
       SELECT
        *
-      FROM wig_products
+      FROM products
       WHERE id = ${id}
     `;
 
@@ -45,4 +46,53 @@ export function getUniqueCategories(products: ProductField[]): string[] {
 
 export function getCategoriesFromPlaceholderData(): string[] {
   return getUniqueCategories(placeholderProducts as ProductField[]);
+}
+
+// User-related database functions
+
+export async function fetchUserByEmail(email: string): Promise<UserField | null> {
+  try {
+    const users = await sql<UserField[]>`
+      SELECT
+        id, name, email, password, role
+      FROM users
+      WHERE email = ${email}
+    `;
+
+    return users[0] || null;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch user by email.');
+  }
+}
+
+export async function fetchUserById(id: string): Promise<UserField | null> {
+  try {
+    const users = await sql<UserField[]>`
+      SELECT
+        id, name, email, password, role
+      FROM users
+      WHERE id = ${id}
+    `;
+
+    return users[0] || null;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch user by ID.');
+  }
+}
+
+export async function createUser(userData: Omit<UserField, 'id'>): Promise<UserField> {
+  try {
+    const users = await sql<UserField[]>`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${userData.name}, ${userData.email}, ${userData.password}, ${userData.role})
+      RETURNING id, name, email, password, role
+    `;
+
+    return users[0];
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to create user.');
+  }
 }

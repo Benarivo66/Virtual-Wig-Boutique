@@ -1,21 +1,36 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import UserDashboard from "../ui/UserDashboard/UserDashboard";
+"use client";
 
-export default async function MePage() {
-    const session = await auth();
+import { useAuth } from "../lib/hooks/useAuth"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import UserDashboard from "../ui/UserDashboard/UserDashboard"
+import { UserField } from "../lib/definitions"
 
-    if (!session?.user) {
-        // Redirect to auth page with return URL
-        redirect("/auth?returnUrl=/me");
+export default function MePage() {
+  const { user, isLoading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      // Redirect to auth page with return URL
+      router.push("/auth?returnUrl=/me")
     }
+  }, [user, isLoading, router])
 
-    const user = {
-        id: session.user.id as string,
-        name: session.user.name as string,
-        email: session.user.email as string,
-        role: (session.user as any).role as "user" | "admin"
-    };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    )
+  }
 
-    return <UserDashboard user={user} />;
+  if (!user) {
+    return null // Will redirect via useEffect
+  }
+
+  return <UserDashboard user={user as UserField} />
 }

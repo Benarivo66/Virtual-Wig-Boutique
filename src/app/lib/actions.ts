@@ -1,10 +1,8 @@
 "use server"
 
-import { signIn, signOut } from "@/auth"
-import { redirect } from "next/navigation"
 import { z } from "zod"
 import postgres from "postgres"
-import { AuthError } from "next-auth"
+import { redirect } from "next/navigation"
 
 export type State = {
   errors?: {
@@ -14,50 +12,6 @@ export type State = {
 }
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
-
-export async function handleSignOut() {
-  await signOut({ redirectTo: "/" })
-}
-
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData
-) {
-  try {
-    let redirectTo = (formData.get("redirectTo") as string) || "/"
-
-    // Decode the URL if it's encoded
-    try {
-      redirectTo = decodeURIComponent(redirectTo)
-    } catch {
-      // If decoding fails, use the original value
-    }
-
-    // Ensure the redirect URL is safe and starts with /
-    if (!redirectTo.startsWith("/")) {
-      redirectTo = "/"
-    }
-
-    await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirect: true,
-      callbackUrl: redirectTo,
-    })
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return "Invalid credentials."
-        case "CallbackRouteError":
-          return "Authentication failed. Please try again."
-        default:
-          return "Something went wrong. Please try again."
-      }
-    }
-    throw error
-  }
-}
 
 const CreateProductSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -90,10 +44,9 @@ export async function createProduct(prevState: any, formData: FormData) {
 
   try {
     await sql`
-      INSERT INTO wig_products (name, description, price, category, image_url, video_url)
-      VALUES (${name}, ${description}, ${price}, ${category}, ${
-      image_url || null
-    }, ${video_url || null})
+      INSERT INTO products (name, description, price, category, image_url, video_url)
+      VALUES (${name}, ${description}, ${price}, ${category}, ${image_url || null
+      }, ${video_url || null})
     `
   } catch (error) {
     console.error("Database Error:", error)
@@ -137,7 +90,7 @@ export async function createUser(prevState: any, formData: FormData) {
 
     // Check if user already exists
     const existingUser = await sql`
-      SELECT id FROM wig_users WHERE email = ${email}
+      SELECT id FROM users WHERE email = ${email}
     `
 
     if (existingUser.length > 0) {
@@ -149,7 +102,7 @@ export async function createUser(prevState: any, formData: FormData) {
 
     // Create the user
     await sql`
-      INSERT INTO wig_users (name, email, password, role)
+      INSERT INTO users (name, email, password, role)
       VALUES (${name}, ${email}, ${hashedPassword}, ${role})
     `
 
