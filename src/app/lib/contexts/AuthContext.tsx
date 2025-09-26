@@ -62,7 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }, [isLoading]);
 
-    const login = useCallback(async (email: string, password: string): Promise<void> => {
+    const login = useCallback(async (email: string, password: string): Promise<UserPayload> => {
         setIsLoading(true);
         setError(null);
         try {
@@ -82,6 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 showToast('success', 'Login successful!');
                 // Clear any existing cart data that might be from a different user
                 // This ensures cart state is properly managed per user
+                return data.user;
             } else {
                 const errorMessage = data.message || 'Login failed';
                 setError(errorMessage);
@@ -97,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }, [showToast]);
 
-    const register = useCallback(async (userData: RegisterData): Promise<void> => {
+    const register = useCallback(async (userData: RegisterData): Promise<UserPayload> => {
         setIsLoading(true);
         setError(null);
         try {
@@ -115,6 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (response.ok) {
                 setUser(data.user);
                 showToast('success', 'Registration successful!', 'Welcome to Virtual Wig Boutique!');
+                return data.user;
             } else {
                 const errorMessage = data.message || 'Registration failed';
                 setError(errorMessage);

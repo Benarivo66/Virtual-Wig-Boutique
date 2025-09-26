@@ -33,10 +33,16 @@ export default function AuthForm({
       const password = formData.get("password") as string
 
       try {
-        await login(email, password)
+        const loggedInUser = await login(email, password)
         setSuccess("Login successful! Redirecting...")
         setTimeout(() => {
-          router.push(returnUrl)
+          // Redirect based on user role if returnUrl is default
+          if (returnUrl === "/") {
+            const redirectUrl = loggedInUser.role === 'admin' ? '/admin' : '/me';
+            router.push(redirectUrl);
+          } else {
+            router.push(returnUrl);
+          }
         }, 1000)
       } catch (error) {
         setError(error instanceof Error ? error.message : "Login failed")
@@ -59,10 +65,16 @@ export default function AuthForm({
       }
 
       try {
-        await register(userData)
+        const newUser = await register(userData)
         setSuccess("Registration successful! You are now logged in.")
         setTimeout(() => {
-          router.push(returnUrl)
+          // Redirect based on user role if returnUrl is default
+          if (returnUrl === "/") {
+            const redirectUrl = newUser.role === 'admin' ? '/admin' : '/me';
+            router.push(redirectUrl);
+          } else {
+            router.push(returnUrl);
+          }
         }, 2000)
       } catch (error) {
         setError(error instanceof Error ? error.message : "Registration failed")

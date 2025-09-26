@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/app/lib/jwt';
+import { verifyTokenEdge } from '@/app/lib/jwt-edge';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Verify JWT token
-  const payload = verifyToken(token);
+  const payload = await verifyTokenEdge(token);
 
   if (!payload) {
     console.log("Invalid token, redirecting to login");

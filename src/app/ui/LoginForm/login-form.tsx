@@ -10,8 +10,9 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, user } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -21,9 +22,15 @@ export default function LoginForm() {
     const password = formData.get("password") as string;
 
     try {
-      await login(email, password);
-      // Redirect after successful login
-      router.push(callbackUrl);
+      const loggedInUser = await login(email, password);
+
+      // Redirect based on user role if no specific callback URL
+      if (!searchParams.get("callbackUrl")) {
+        const redirectUrl = loggedInUser.role === 'admin' ? '/admin' : '/me';
+        router.push(redirectUrl);
+      } else {
+        router.push(callbackUrl);
+      }
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Login failed");
     }
