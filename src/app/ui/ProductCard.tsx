@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { FaRegStar } from "react-icons/fa";
 import { addToCart } from "@/app/lib/cart";
 
@@ -12,8 +13,7 @@ type ProductCardProps = {
   category: string;
   average_rating?: number | null;
   image_url: string;
-  video_url: string | null
-  
+  video_url: string | null;
 };
 
 export default function ProductCard({
@@ -39,26 +39,25 @@ export default function ProductCard({
 
   return (
     <div className="bg-tertiary2 shadow-md rounded-2xl p-4 flex flex-col">
-      <a href={`/product/${id}`} className="group">
+      <Link href={`/dashboard/product/${id}`} className="group">
         <div className="w-full bg-tertiary2 flex flex-col items-center justify-center rounded-xl overflow-hidden">
-  {video_url && (
-    <video
-      src={video_url}
-      controls
-      className="object-contain max-h-64 w-auto mb-2 rounded-lg"
-    />
-  )}
-  {image_url && (
-    <Image
-      src={image_url}
-      alt={name}
-      width={400}
-      height={320}
-      className="object-contain max-h-64 w-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
-    />
-  )}
-</div>
-
+          {video_url && (
+            <video
+              src={video_url}
+              controls
+              className="object-contain max-h-64 w-auto mb-2 rounded-lg"
+            />
+          )}
+          {image_url && (
+            <Image
+              src={image_url}
+              alt={name}
+              width={400}
+              height={320}
+              className="object-contain max-h-64 w-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
+            />
+          )}
+        </div>
 
         {/* Details */}
         <div className="mt-4">
@@ -74,13 +73,14 @@ export default function ProductCard({
             )}
           </div>
         </div>
-      </a>
+      </Link>
 
       {/* Add to Cart */}
       <button
         className="mt-4 py-2 px-4 rounded-lg bg-secondary text-white font-medium hover:bg-primary transition"
         onClick={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           addToCart(product);
           alert(`Added ${name} to cart!`);
         }}

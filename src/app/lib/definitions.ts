@@ -7,7 +7,9 @@ export type ProductField = {
   image_url?: string;
   video_url?: string;
   average_rating?: number | null;
+  review_count?: number; // Add this
 };
+
 
 export type UserField = {
   id: string;

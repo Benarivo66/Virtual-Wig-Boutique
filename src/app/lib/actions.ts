@@ -19,7 +19,7 @@ const ReviewFormSchema = z.object({
     required_error: "Missing user ID.",
   }),
   title: z.string().min(1, { message: "Title is required." }),
-  star_rating: z.coerce
+  rating: z.coerce
     .number()
     .min(1, { message: "Rating must be at least 1 star." })
     .max(5, { message: "Rating cannot exceed 5 stars." }),
@@ -57,7 +57,7 @@ export type State = {
     productId?: string[];
     userId?: string[];
     title?: string[];
-    star_rating?: string[];
+    rating?: string[];
     review?: string[];
   };
   message?: string | null;
@@ -88,41 +88,59 @@ export type ProductState = {
 
 
 export async function createReview(prevState: State, formData: FormData) {
+  // Add debug logging
+  console.log('=== CREATE REVIEW DEBUG ===');
+  console.log('productId:', formData.get("productId"));
+  console.log('userId:', formData.get("userId"));
+  console.log('rating:', formData.get("rating"));
+  console.log('title:', formData.get("title"));
+  console.log('content:', formData.get("content"));
+  console.log('==========================');
+
   // Validate form using Zod
   const validatedFields = ReviewFormSchema.safeParse({
     productId: formData.get("productId"),
     userId: formData.get("userId"),
     title: formData.get("title"),
-    star_rating: formData.get("rating"),
-    review: formData.get("content"),
+    rating: formData.get("rating"), // This matches your form field name
+    review: formData.get("content"),     // This matches your form field name
   });
 
   if (!validatedFields.success) {
+    console.log('Validation errors:', validatedFields.error.flatten().fieldErrors);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Create Review.",
     };
   }
 
-  const { productId, userId, title, star_rating, review } =
-    validatedFields.data;
+  const { productId, userId, title, rating, review } = validatedFields.data;
   const created_at = new Date().toISOString();
 
   try {
+    // Fix the database insert - use the correct column names
     await sql`
-      INSERT INTO ratings (product_id, user_id, title, star_rating, review, created_at)
-      VALUES (${productId}, ${userId}, ${title}, ${star_rating}, ${review}, ${created_at})
+      INSERT INTO ratings (product_id, user_id, title, rating, review, created_at)
+      VALUES (${productId}, ${userId}, ${title}, ${rating}, ${review}, ${created_at})
     `;
+    
+    console.log('Review inserted successfully');
+    
+    // Update the product's average rating
+    // You'll need to import this function
+    // await updateProductAverageRating(productId);
+    
   } catch (error) {
+    console.error('Database Error:', error);
     return {
       message: "Database Error: Failed to Create Review.",
     };
   }
 
-  revalidatePath(`/product/${productId}`);
-  redirect(`/product/${productId}`);
+  // Fix the redirect path - it should include /dashboard
+  revalidatePath(`/dashboard/product/${productId}`);
+  redirect(`/dashboard/product/${productId}`);
 }
-
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
@@ -163,7 +181,7 @@ export async function createUser(prevState: UserState, formData: FormData) {
 
   try {
     await sql`
-      INSERT INTO wig_users (id, email, password, name, role)
+      INSERT INTO users (id, email, password, name, role)
       VALUES (${id}, ${email}, ${hashedPassword}, ${name}, ${role})
     `;
     return { message: "User registered successfully." };
@@ -198,7 +216,7 @@ export async function createProduct(
 
   try {
     await sql`
-      INSERT INTO wig_products (id, name, description, price, category, image_url, video_url)
+      INSERT INTO products (id, name, description, price, category, image_url, video_url)
       VALUES (${id}, ${name}, ${description}, ${price}, ${category}, ${image_url || null}, ${video_url || null})
 `;
 
