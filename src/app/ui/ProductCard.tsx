@@ -18,6 +18,7 @@ interface ProductCardProps {
   showCategory?: boolean
   showRating?: boolean
   onClick?: (productId: string) => void
+  isAdminView?: boolean
 }
 
 export default function ProductCard({
@@ -25,6 +26,7 @@ export default function ProductCard({
   showCategory = true,
   showRating = true,
   onClick,
+  isAdminView = false,
 }: ProductCardProps) {
   const {
     id,
@@ -131,8 +133,9 @@ export default function ProductCard({
     if (onClick) {
       onClick(id)
     } else {
-      // Navigate to customer product detail page instead of admin page
-      window.location.href = `/product/${id}`
+      // Navigate based on context (admin vs customer)
+      const route = isAdminView ? `/admin/product/${id}` : `/product/${id}`
+      window.location.href = route
     }
   }
 

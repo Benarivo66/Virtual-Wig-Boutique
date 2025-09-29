@@ -1,40 +1,48 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useActionState } from "react";
-import { createProduct } from "@/app/lib/actions";
-import uploadToCloudinary from '@/app/helper/uploadCloud';
-import Image from "next/image";
+import { useState } from "react"
+import { useActionState } from "react"
+import { createProduct } from "@/app/lib/actions"
+import uploadToCloudinary from "@/app/helper/uploadCloud"
+import Image from "next/image"
 
-const initialState = {
+type FormState = {
+  errors: Record<string, string>
+  message: string
+}
+
+const initialState: FormState = {
   errors: {},
   message: "",
-};
+}
 
 export default function CreateProductForm() {
   const [state, formAction, isPending] = useActionState(
     createProduct,
     initialState
-  );
+  )
 
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
 
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") {
-    const file = e.target.files?.[0];
-    console.log({file});
-    if (!file) return;
+  async function handleUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "video"
+  ) {
+    const file = e.target.files?.[0]
+    console.log({ file })
+    if (!file) return
 
     try {
-      setUploading(true);
-      const url = await uploadToCloudinary(file, type);
-      if (type === "image") setImageUrl(url);
-      if (type === "video") setVideoUrl(url);
+      setUploading(true)
+      const url = await uploadToCloudinary(file, type)
+      if (type === "image") setImageUrl(url)
+      if (type === "video") setVideoUrl(url)
     } catch (err) {
-      console.error("Upload failed:", err);
+      console.error("Upload failed:", err)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
   }
 
@@ -51,7 +59,9 @@ export default function CreateProductForm() {
           required
           className="mt-1 w-full rounded border px-3 py-2"
         />
-        {state.errors?.name && <p className="text-red-500">{state.errors.name}</p>}
+        {state.errors?.name && (
+          <p className="text-red-500">{state.errors.name}</p>
+        )}
       </div>
 
       {/* Description */}
@@ -106,13 +116,15 @@ export default function CreateProductForm() {
           className="mt-1"
         />
         {uploading && <p className="text-sm text-gray-500">Uploading…</p>}
-        {imageUrl && <Image
-          src={imageUrl}
-          alt="Preview"
-          width={128} 
-          height={128}
-          className="mt-2 h-32 rounded object-cover"
-        />}
+        {imageUrl && (
+          <Image
+            src={imageUrl}
+            alt="Preview"
+            width={128}
+            height={128}
+            className="mt-2 h-32 rounded object-cover"
+          />
+        )}
         <input type="hidden" name="image_url" value={imageUrl || ""} />
       </div>
 
@@ -148,5 +160,5 @@ export default function CreateProductForm() {
         <p className="text-green-600 font-medium">{state.message}</p>
       )}
     </form>
-  );
+  )
 }

@@ -36,13 +36,7 @@ export default function AuthForm({
         const loggedInUser = await login(email, password)
         setSuccess("Login successful! Redirecting...")
         setTimeout(() => {
-          // Redirect based on user role if returnUrl is default
-          if (returnUrl === "/") {
-            const redirectUrl = loggedInUser.role === 'admin' ? '/admin' : '/me';
-            router.push(redirectUrl);
-          } else {
-            router.push(returnUrl);
-          }
+          router.push("/me")
         }, 1000)
       } catch (error) {
         setError(error instanceof Error ? error.message : "Login failed")
@@ -70,10 +64,10 @@ export default function AuthForm({
         setTimeout(() => {
           // Redirect based on user role if returnUrl is default
           if (returnUrl === "/") {
-            const redirectUrl = newUser.role === 'admin' ? '/admin' : '/me';
-            router.push(redirectUrl);
+            const redirectUrl = newUser.role === "admin" ? "/admin" : "/me"
+            router.push(redirectUrl)
           } else {
-            router.push(returnUrl);
+            router.push(returnUrl)
           }
         }, 2000)
       } catch (error) {
