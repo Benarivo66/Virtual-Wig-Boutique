@@ -1,0 +1,92 @@
+.user-icon-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    color: #444;
+}
+
+.user-icon-link:hover {
+    background-color: #f3f4f6;
+}
+
+.user-icon-link:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.user-icon {
+    width: 28px;
+    height: 28px;
+    transition: color 0.2s;
+}
+
+.user-icon-link:hover .user-icon {
+    color: #2b6777;
+}
+
+.user-name-mobile {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+    display: none;
+}
+
+/* Mobile responsive design */
+@media (max-width: 768px) {
+    .user-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .user-name-mobile {
+        display: block;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .user-name-mobile {
+        font-size: 0.8rem;
+        max-width: 60px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+    .user-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .user-name-mobile {
+        font-size: 0.75rem;
+        max-width: 50px;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .user-icon-link:hover {
+        background: #000;
+        color: #fff;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .user-icon-link {
+        transition: none;
+    }
+}

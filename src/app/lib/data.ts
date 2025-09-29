@@ -1,119 +1,98 @@
-import postgres from 'postgres';
-import {
-    ProductField,
-    RatingField,
-    UserField
-} from './definitions';
+import postgres from "postgres"
+import { ProductField, UserField } from "./definitions"
+import { products as placeholderProducts } from "./placeholder-data"
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
 
-// UPDATED: Fetch all products WITH average ratings
 export async function fetchProducts() {
   try {
     const products = await sql<ProductField[]>`
-      SELECT 
-        p.*,
-        COALESCE(AVG(r.rating), 0) as average_rating,
-        COUNT(r.id) as review_count
-      FROM products p
-      LEFT JOIN ratings r ON p.id = r.product_id
-      GROUP BY p.id
-      ORDER BY p.name ASC
-    `;
-    return products;
+      SELECT
+       *
+      FROM products
+      ORDER BY name ASC
+    `
+    return products
   } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all products.');
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch all products.")
   }
 }
 
-// UPDATED: Fetch single product WITH average ratings
 export async function fetchProductById(id: string) {
   try {
-    const products = await sql<ProductField[]>`
-      SELECT 
-        p.*,
-        COALESCE(AVG(r.rating), 0) as average_rating,
-        COUNT(r.id) as review_count
-      FROM products p
-      LEFT JOIN ratings r ON p.id = r.product_id
-      WHERE p.id = ${id}
-      GROUP BY p.id
-    `;
-    return products[0];
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch product.');
+    const product = await sql<ProductField[]>`
+      SELECT
+       *
+      FROM products
+      WHERE id = ${id}
+    `
+
+    return product[0] || null
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch product.")
   }
 }
 
-// Fetch reviews for a product (keep as is)
-export async function fetchRatingsAndReviewsByID(productId: string) {
-  try {
-    const reviews = await sql<RatingField[]>`
-      SELECT r.*, u.name as user_name
-      FROM ratings r
-      LEFT JOIN users u ON r.user_id = u.id
-      WHERE r.product_id = ${productId}
-      ORDER BY r.created_at DESC
-    `;
-    return reviews;
-  } catch (error) {
-    console.error('Database Error:', error);
-    return [];
-  }
+export function getUniqueCategories(products: ProductField[]): string[] {
+  const categories = products.map((product) => product.category)
+  return [...new Set(categories)].sort()
 }
 
-// Fetch user by ID (keep as is)
-export async function fetchUserById(id: string) {
+export function getCategoriesFromPlaceholderData(): string[] {
+  return getUniqueCategories(placeholderProducts as ProductField[])
+}
+
+// User-related database functions
+
+export async function fetchUserByEmail(
+  email: string
+): Promise<UserField | null> {
   try {
     const users = await sql<UserField[]>`
-      SELECT * FROM users WHERE id = ${id}
-    `;
-    return users[0];
-  } catch (error) {
-    console.error('Database Error:', error);
-    return null;
+      SELECT
+        id, name, email, password, role
+      FROM users
+      WHERE email = ${email}
+    `
+
+    return users[0] || null
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch user by email.")
   }
 }
 
-// Calculate average rating for a specific product (keep as is)
-export async function calculateAverageRating(productId: string) {
+export async function fetchUserById(id: string): Promise<UserField | null> {
   try {
-    const result = await sql`
-      SELECT 
-        AVG(rating) as average_rating,
-        COUNT(*) as total_reviews
-      FROM ratings 
-      WHERE product_id = ${productId}
-    `;
-    
-    const avgRating = result[0]?.average_rating || 0;
-    const totalReviews = result[0]?.total_reviews || 0;
-    
-    return {
-      average_rating: Math.round(avgRating * 10) / 10,
-      total_reviews: totalReviews
-    };
-  } catch (error) {
-    console.error('Database Error:', error);
-    return { average_rating: 0, total_reviews: 0 };
+    const users = await sql<UserField[]>`
+      SELECT
+        id, name, email, password, role
+      FROM users
+      WHERE id = ${id}
+    `
+
+    return users[0] || null
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch user by ID.")
   }
 }
 
-// Update product with average rating (keep as is)
-export async function updateProductAverageRating(productId: string) {
+export async function createUser(
+  userData: Omit<UserField, "id">
+): Promise<UserField> {
   try {
-    const { average_rating } = await calculateAverageRating(productId);
-    
-    await sql`
-      UPDATE products 
-      SET average_rating = ${average_rating}
-      WHERE id = ${productId}
-    `;
-    
-    return average_rating;
-  } catch (error) {
-    console.error('Database Error:', error);
+    const users = await sql<UserField[]>`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${userData.name}, ${userData.email}, ${userData.password}, ${userData.role})
+      RETURNING id, name, email, password, role
+    `
+
+    return users[0]
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to create user.")
   }
 }

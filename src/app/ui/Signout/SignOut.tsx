@@ -1,20 +1,25 @@
+"use client";
+
 import React from "react";
-import { signOut } from "@/auth";
+import { useAuth } from "@/app/lib/hooks/useAuth";
 import styles from "./SignOut.module.css";
 
 function SignOut() {
+  const { logout } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut({ redirectTo: "/" });
-      }}
-    >
-      <button className={styles.signOutButton}>
-        {/* <PowerIcon className="w-6" /> */}
-        <div className={styles.signOutText}>Sign Out</div>
-      </button>
-    </form>
+    <button onClick={handleSignOut} className={styles.signOutButton}>
+      {/* <PowerIcon className="w-6" /> */}
+      <div className={styles.signOutText}>Sign Out</div>
+    </button>
   );
 }
 

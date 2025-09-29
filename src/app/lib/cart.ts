@@ -1,18 +1,24 @@
-import type { Product } from "./definitions";
+import type { ProductField } from "./definitions";
 
 // Utility functions for cart management using localStorage
-export type CartItem = Product & { quantity: number };
+export type CartItem = ProductField & { quantity: number };
 
 export function getCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    // Ensure price is a number for each item
+    return cart.map((item: any) => ({
+      ...item,
+      price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+      quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+    }));
   } catch {
     return [];
   }
 }
 
-export function addToCart(product: Product) {
+export function addToCart(product: ProductField) {
   if (typeof window === "undefined") return;
   const cart: CartItem[] = getCart();
   const index = cart.findIndex((item) => item.id === product.id);
@@ -22,6 +28,40 @@ export function addToCart(product: Product) {
     cart.push({ ...product, quantity: 1 });
   }
   localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+export function removeItem(productId: string) {
+  if (typeof window === "undefined") return;
+  const cart: CartItem[] = getCart();
+  const filteredCart = cart.filter((item) => item.id !== productId);
+  localStorage.setItem("cart", JSON.stringify(filteredCart));
+}
+
+export function updateQuantity(productId: string, quantity: number) {
+  if (typeof window === "undefined") return;
+  const cart: CartItem[] = getCart();
+  const index = cart.findIndex((item) => item.id === productId);
+  if (index > -1) {
+    if (quantity <= 0) {
+      // Remove item if quantity is 0 or negative
+      cart.splice(index, 1);
+    } else {
+      cart[index].quantity = quantity;
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+}
+
+export function getTotalItems(cart: CartItem[]): number {
+  return cart.reduce((total, item) => total + item.quantity, 0);
+}
+
+export function getTotalPrice(cart: CartItem[]): number {
+  return cart.reduce((total, item) => {
+    const price = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
+    const quantity = typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity;
+    return total + (price * quantity);
+  }, 0);
 }
 
 export function clearCart() {
