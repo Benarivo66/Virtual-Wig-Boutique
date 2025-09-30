@@ -398,7 +398,12 @@ function CartPage() {
                         Processing...
                       </div>
                     ) : (
-                      "Proceed to Checkout"
+                      <Link
+                      href="/checkout"
+                      >
+                       Proceed to Checkout
+                      </Link>
+                     
                     )}
                   </button>
 

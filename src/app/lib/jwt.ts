@@ -4,8 +4,8 @@ import { JWTPayload, UserPayload } from './auth-types';
 // JWT secret key - in production this should be from environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-// Token expiration time (15 minutes)
-const TOKEN_EXPIRATION = '15m';
+// Token expiration time (45 minutes)
+const TOKEN_EXPIRATION = '45m';
 
 /**
  * Generate a JWT token for a user
