@@ -26,7 +26,7 @@ export default function AdminPage() {
   }
 
   if (!user || user.role !== "admin") {
-    return null // Will redirect via useEffect
+    return null;
   }
 
   return (

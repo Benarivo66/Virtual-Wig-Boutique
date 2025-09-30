@@ -96,3 +96,21 @@ export async function createUser(
     throw new Error("Failed to create user.")
   }
 }
+
+export async function getRequests() {
+  const requests = await sql`
+    SELECT * FROM request ORDER BY created_at DESC;
+  `;
+
+  const requestsWithProducts = await Promise.all(
+    requests.map(async (req) => {
+      const products = await sql`
+        SELECT * FROM request_product WHERE request_id = ${req.id};
+      `;
+      return { ...req, products };
+    })
+  );
+
+  return requestsWithProducts;
+}
+

@@ -13,7 +13,7 @@ function Sidenav() {
             href="/admin/products"
             aria-label="View products"
           >
-            View Products
+            View products
           </Link>
         </li>
         <li>
@@ -24,7 +24,17 @@ function Sidenav() {
           >
             Create a product
           </Link>
-        </li>
+           </li>
+          <li>
+            <Link
+            className={styles.sidenavLink}
+            href="/admin/requests"
+            aria-label="view request"
+          >
+            View requests
+          </Link>
+          </li>
+       
       </ul>
     </nav>
   );
