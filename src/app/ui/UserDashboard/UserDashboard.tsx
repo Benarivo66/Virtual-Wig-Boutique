@@ -13,6 +13,7 @@ import { useAuth } from "@/app/lib/hooks/useAuth"
 import type { UserField } from "@/app/lib/definitions"
 import Link from "next/link"
 import "./UserDashboard.css"
+import UserOrders from "./UserOrders"
 
 interface UserDashboardProps {
   user: UserField
@@ -147,14 +148,7 @@ export default function UserDashboard({ user }: UserDashboardProps) {
                 <h2>Your Orders</h2>
                 <p>Track and manage your purchases</p>
               </div>
-              <div className="orders-placeholder">
-                <FaShoppingBag className="placeholder-icon" />
-                <h3>No orders yet</h3>
-                <p>When you make your first purchase, it will appear here.</p>
-                <Link href="/" className="shop-button">
-                  Start Shopping
-                </Link>
-              </div>
+              <UserOrders user={user} />
             </div>
           )}
 
