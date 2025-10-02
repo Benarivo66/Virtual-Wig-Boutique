@@ -12,49 +12,114 @@ import {
   FaSpinner,
   FaCheck,
 } from "react-icons/fa"
-import { ProductField } from "@/app/lib/definitions"
+import { ProductField, ReviewField } from "@/app/lib/definitions"
 import { useCart } from "@/app/lib/contexts/CartContext"
 import { useToast } from "@/app/lib/contexts/ToastContext"
+import ProductReviews from "@/app/ui/ProductReviews/ProductReviews"
 
 export default function ProductDetailPage() {
   const params = useParams()
   const productId = params.id as string
   const [product, setProduct] = useState<ProductField | null>(null)
+  const [reviews, setReviews] = useState<ReviewField[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [addToCartState, setAddToCartState] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle")
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
 
   const { addItem } = useCart()
   const { showSuccess, showError } = useToast()
 
   useEffect(() => {
-    async function loadProduct() {
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const userData = await response.json()
+          setCurrentUserId(userData.user.id)
+        } else {
+          setCurrentUserId(null)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setCurrentUserId(null)
+      } finally {
+        setAuthLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  useEffect(() => {
+    async function loadProductData() {
       try {
         setLoading(true)
         setError(null)
 
-        const response = await fetch(`/api/products/${productId}`)
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || "Product not found")
+      // In your loadProductData function, replace the product fetch section with:
+
+// Fetch product data with better error handling
+const productResponse = await fetch(`/api/products/${productId}`)
+
+if (!productResponse.ok) {
+  let errorMessage = "Product not found"
+  try {
+    // Try to parse error response as JSON
+    const errorData = await productResponse.json()
+    errorMessage = errorData.error || errorData.message || errorData.details || `Error ${productResponse.status}: ${productResponse.statusText}`
+  } catch (jsonError) {
+    // If JSON parsing fails, use status text
+    errorMessage = `Error ${productResponse.status}: ${productResponse.statusText}`
+  }
+  
+  // If it's a 500 error, provide more specific message
+  if (productResponse.status === 500) {
+    errorMessage = "Server error loading product. Please try again later."
+  }
+  
+  throw new Error(errorMessage)
+}
+
+// Parse the successful response
+const productData = await productResponse.json()
+if (!productData) {
+  throw new Error("Product data is empty")
+}
+setProduct(productData)
+
+        // Fetch reviews for this product
+        try {
+          const reviewsResponse = await fetch(`/api/reviews?productId=${productId}`)
+          if (reviewsResponse.ok) {
+            const reviewsData = await reviewsResponse.json()
+            setReviews(reviewsData)
+          } else if (reviewsResponse.status === 404) {
+            console.warn("Reviews endpoint not found, showing empty reviews")
+            setReviews([])
+          } else {
+            console.warn("Could not fetch reviews, status:", reviewsResponse.status)
+            setReviews([])
+          }
+        } catch (reviewsError) {
+          console.warn("Failed to fetch reviews, using empty array:", reviewsError)
+          setReviews([])
         }
-        const productData = await response.json()
-        if (!productData) {
-          throw new Error("Product not found")
-        }
-        setProduct(productData)
+
       } catch (err) {
         console.error("Failed to load product:", err)
-        setError("Failed to load product. Please try again later.")
+        const errorMessage = err instanceof Error ? err.message : "Failed to load product. Please try again later."
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }
     }
 
     if (productId) {
-      loadProduct()
+      loadProductData()
     }
   }, [productId])
 
@@ -67,7 +132,10 @@ export default function ProductDetailPage() {
   }
 
   const renderStarRating = (rating: number | null | undefined) => {
-    if (!rating || rating === 0) {
+    // Convert rating to number and handle null/undefined cases
+    const numericRating = rating ? Number(rating) : 0;
+    
+    if (!numericRating || numericRating === 0) {
       return (
         <div className="flex items-center gap-1">
           <div className="flex items-center">
@@ -84,8 +152,8 @@ export default function ProductDetailPage() {
     }
 
     const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 !== 0
+    const fullStars = Math.floor(numericRating)
+    const hasHalfStar = numericRating % 1 !== 0
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
@@ -105,7 +173,7 @@ export default function ProductDetailPage() {
       )
     }
 
-    const remainingStars = 5 - Math.ceil(rating)
+    const remainingStars = 5 - Math.ceil(numericRating)
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
         <FaRegStar key={`empty-${i}`} className="text-gray-300 text-lg" />
@@ -116,8 +184,13 @@ export default function ProductDetailPage() {
       <div className="flex items-center gap-1">
         <div className="flex items-center">{stars}</div>
         <span className="text-sm text-gray-600 ml-2">
-          ({rating.toFixed(1)})
+          ({numericRating.toFixed(1)})
         </span>
+        {product?.review_count && product.review_count > 0 && (
+          <span className="text-sm text-gray-500 ml-1">
+            ({product.review_count} review{product.review_count !== 1 ? 's' : ''})
+          </span>
+        )}
       </div>
     )
   }
@@ -221,7 +294,33 @@ export default function ProductDetailPage() {
     }
   }
 
-  if (loading) {
+  // Handle review submission success
+  const handleReviewSubmitted = async () => {
+    // Refresh reviews after a new review is submitted
+    try {
+      // Refresh reviews
+      const reviewsResponse = await fetch(`/api/reviews?productId=${productId}`)
+      if (reviewsResponse.ok) {
+        const reviewsData = await reviewsResponse.json()
+        setReviews(reviewsData)
+      }
+      
+      // Refresh product data - force a fresh fetch
+      const productResponse = await fetch(`/api/products/${productId}?refresh=${Date.now()}`)
+      if (productResponse.ok) {
+        const productData = await productResponse.json()
+        setProduct(productData)
+      }
+
+      showSuccess("Review Submitted!", "Thank you for your review.", {
+        duration: 3000,
+      })
+    } catch (err) {
+      console.error("Failed to refresh data after review:", err)
+    }
+  }
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -237,18 +336,26 @@ export default function ProductDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Product Not Found
+            {error ? "Error Loading Product" : "Product Not Found"}
           </h2>
           <p className="text-gray-600 mb-6">
             {error || "The product you're looking for doesn't exist."}
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <FaArrowLeft className="mr-2" />
-            Back to Home
-          </Link>
+          <div className="space-x-4">
+            <Link
+              href="/products"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <FaArrowLeft className="mr-2" />
+              Back to Products
+            </Link>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -323,7 +430,7 @@ export default function ProductDetailPage() {
 
               {/* Price */}
               <div className="text-3xl font-bold text-gray-900">
-                {formatPrice(product.price)}
+                {formatPrice(Number(product.price))}
               </div>
 
               {/* Description */}
@@ -361,13 +468,31 @@ export default function ProductDetailPage() {
                     <span className="font-medium text-gray-900">Rating:</span>
                     <span className="text-gray-600 ml-2">
                       {product.average_rating
-                        ? `${product.average_rating}/5`
+                        ? `${Number(product.average_rating).toFixed(1)}/5`
                         : "No ratings yet"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-900">Reviews:</span>
+                    <span className="text-gray-600 ml-2">
+                      {product.review_count || 0}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-12 bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="p-8">
+            <ProductReviews 
+              productId={productId} 
+              userId={currentUserId || ""} 
+              productReviews={reviews}
+              onReviewSubmitted={handleReviewSubmitted}
+            />
           </div>
         </div>
       </div>

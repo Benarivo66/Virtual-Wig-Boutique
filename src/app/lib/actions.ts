@@ -120,12 +120,16 @@ export async function createUser(prevState: any, formData: FormData) {
   }
 }
 
+// Fixed the CreateReviewSchema in actions.ts
 const CreateReviewSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
   userId: z.string().min(1, "User ID is required"),
-  review: z.string().min(1, "Review is required"),
+  content: z.string().min(1, "Review content is required"), // This maps to 'review' in database
   rating: z.coerce.number().min(1).max(5, "Rating must be between 1 and 5"),
 })
+
+
+// createReview function in actions.ts, added this after inserting the review:
 
 export async function createReview(
   prevState: State,
@@ -134,7 +138,7 @@ export async function createReview(
   const validatedFields = CreateReviewSchema.safeParse({
     productId: formData.get("productId"),
     userId: formData.get("userId"),
-    review: formData.get("review"),
+    content: formData.get("content"),
     rating: formData.get("rating"),
   })
 
@@ -145,13 +149,46 @@ export async function createReview(
     }
   }
 
-  const { productId, userId, review, rating } = validatedFields.data
+  const { productId, userId, content, rating } = validatedFields.data
 
   try {
+    // Inserted the new review
     await sql`
-      INSERT INTO wig_ratings (product_id, user_id, review, rating, created_at)
-      VALUES (${productId}, ${userId}, ${review}, ${rating}, NOW())
+      INSERT INTO ratings (product_id, user_id, rating, review, created_at)
+      VALUES (${productId}, ${userId}, ${rating}, ${content}, NOW())
     `
+
+    // Updated product stats - check if review_count column exists first
+    try {
+      await sql`
+        UPDATE products 
+        SET 
+          average_rating = (
+            SELECT COALESCE(AVG(rating), 0) 
+            FROM ratings 
+            WHERE product_id = ${productId}
+          ),
+          review_count = (
+            SELECT COUNT(*) 
+            FROM ratings 
+            WHERE product_id = ${productId}
+          )
+        WHERE id = ${productId}
+      `
+    } catch (updateError) {
+      // If review_count column doesn't exist, only update average_rating
+      console.warn('review_count column not found, updating only average_rating')
+      await sql`
+        UPDATE products 
+        SET 
+          average_rating = (
+            SELECT COALESCE(AVG(rating), 0) 
+            FROM ratings 
+            WHERE product_id = ${productId}
+          )
+        WHERE id = ${productId}
+      `
+    }
 
     return {
       message: "Review created successfully!",
