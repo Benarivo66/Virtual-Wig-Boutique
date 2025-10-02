@@ -3,11 +3,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { ProductField } from '../definitions';
 import {
-    getCart,
-    addToCart as addToCartUtil,
-    removeItem as removeItemUtil,
-    updateQuantity as updateQuantityUtil,
-    clearCart as clearCartUtil,
     getTotalItems,
     getTotalPrice,
     type CartItem
@@ -22,6 +17,7 @@ interface CartContextType {
     removeItem: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
+    refreshCart: () => void;   // ✅ added
     isLoading: boolean;
 }
 
@@ -42,61 +38,47 @@ interface CartProviderProps {
 export function CartProvider({ children }: CartProviderProps) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { user, isLoading: authLoading } = useAuth();
+    const { user } = useAuth();
 
     // Get user-specific cart key
     const getCartKey = useCallback(() => {
         return user ? `cart_${user.id}` : 'cart';
     }, [user]);
 
-    // Load cart from localStorage when auth state changes
-    useEffect(() => {
-        if (!authLoading) {
-            const cartKey = getCartKey();
-            if (typeof window !== 'undefined') {
-                try {
-                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
-                    const processedCart = cart.map((item: any) => ({
-                        ...item,
-                        price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
-                        quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
-                    }));
-                    setItems(processedCart);
-                } catch {
-                    setItems([]);
-                }
+    // Load cart from localStorage
+    const loadCart = useCallback(() => {
+        const cartKey = getCartKey();
+        if (typeof window !== 'undefined') {
+            try {
+                const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+                const processedCart = cart.map((item: any) => ({
+                    ...item,
+                    price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+                    quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
+                }));
+                setItems(processedCart);
+            } catch {
+                setItems([]);
             }
         }
-    }, [user, authLoading, getCartKey]);
+    }, [getCartKey]);
+
+    // Run loadCart whenever user changes
+    useEffect(() => {
+        loadCart();
+    }, [loadCart]);
 
     // Calculate totals
     const totalItems = getTotalItems(items);
     const totalPrice = getTotalPrice(items);
 
-    // Refresh cart state from localStorage with user-specific key
+    // Refresh cart state manually (✅ exposed to context)
     const refreshCart = useCallback(() => {
-        if (!authLoading) {
-            const cartKey = getCartKey();
-            if (typeof window !== 'undefined') {
-                try {
-                    const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
-                    const processedCart = cart.map((item: any) => ({
-                        ...item,
-                        price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
-                        quantity: typeof item.quantity === 'string' ? parseInt(item.quantity, 10) : item.quantity
-                    }));
-                    setItems(processedCart);
-                } catch {
-                    setItems([]);
-                }
-            }
-        }
-    }, [authLoading, getCartKey]);
+        loadCart();
+    }, [loadCart]);
 
-    // Add item to cart with user-specific storage
+    // Add item
     const addItem = useCallback(async (product: ProductField, quantity: number = 1) => {
-        if (authLoading) return;
-
         setIsLoading(true);
         try {
             const cartKey = getCartKey();
@@ -119,12 +101,10 @@ export function CartProvider({ children }: CartProviderProps) {
         } finally {
             setIsLoading(false);
         }
-    }, [items, authLoading, getCartKey]);
+    }, [items, getCartKey]);
 
-    // Remove item from cart with user-specific storage
+    // Remove item
     const removeItem = useCallback((productId: string) => {
-        if (authLoading) return;
-
         const cartKey = getCartKey();
         const updatedCart = items.filter(item => item.id !== productId);
 
@@ -132,12 +112,10 @@ export function CartProvider({ children }: CartProviderProps) {
             localStorage.setItem(cartKey, JSON.stringify(updatedCart));
         }
         setItems(updatedCart);
-    }, [items, authLoading, getCartKey]);
+    }, [items, getCartKey]);
 
-    // Update item quantity with user-specific storage
+    // Update quantity
     const updateQuantity = useCallback((productId: string, quantity: number) => {
-        if (authLoading) return;
-
         const cartKey = getCartKey();
         const updatedCart = items.map(item => {
             if (item.id === productId) {
@@ -150,18 +128,16 @@ export function CartProvider({ children }: CartProviderProps) {
             localStorage.setItem(cartKey, JSON.stringify(updatedCart));
         }
         setItems(updatedCart);
-    }, [items, authLoading, getCartKey]);
+    }, [items, getCartKey]);
 
-    // Clear entire cart with user-specific storage
+    // Clear cart
     const clearCart = useCallback(() => {
-        if (authLoading) return;
-
         const cartKey = getCartKey();
         if (typeof window !== 'undefined') {
             localStorage.removeItem(cartKey);
         }
         setItems([]);
-    }, [authLoading, getCartKey]);
+    }, [getCartKey]);
 
     const value: CartContextType = {
         items,
@@ -171,6 +147,7 @@ export function CartProvider({ children }: CartProviderProps) {
         removeItem,
         updateQuantity,
         clearCart,
+        refreshCart,   // ✅ exposed
         isLoading,
     };
 

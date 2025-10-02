@@ -1,3 +1,18 @@
 {
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Disabled",
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "Neon db",
+            "connectString": "postgresql://neondb_owner:npg_2Oom3gzrYRfG@ep-cold-sky-aby3k3fv-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        }
+    ]
 }
