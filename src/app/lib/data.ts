@@ -21,12 +21,30 @@ export async function fetchProducts() {
 
 export async function fetchProductById(id: string) {
   try {
-    const product = await sql<ProductField[]>`
-      SELECT
-       *
+    // First try to find by UUID
+    let product = await sql<ProductField[]>`
+      SELECT *
       FROM products
-      WHERE id = ${id}
+      WHERE id::text = ${id}
     `
+
+    // If no product found and id looks like a slug, try to find by name
+    if (
+      !product.length &&
+      !id.match(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      )
+    ) {
+      const slugToName = id
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+      product = await sql<ProductField[]>`
+        SELECT *
+        FROM products
+        WHERE LOWER(name) = LOWER(${slugToName})
+      `
+    }
 
     return product[0] || null
   } catch (err) {
@@ -100,20 +118,19 @@ export async function createUser(
 export async function getRequests() {
   const requests = await sql`
     SELECT * FROM request ORDER BY created_at DESC;
-  `;
+  `
 
   const requestsWithProducts = await Promise.all(
     requests.map(async (req) => {
       const products = await sql`
         SELECT * FROM request_product WHERE request_id = ${req.id};
-      `;
-      return { ...req, products };
+      `
+      return { ...req, products }
     })
-  );
+  )
 
   return requestsWithProducts;
 }
-
 // Updated the fetchProductReviews function in data.ts
 // In  data.ts file, updated the fetchProductWithReviews function:
 
