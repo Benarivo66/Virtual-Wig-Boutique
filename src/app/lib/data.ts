@@ -1,5 +1,5 @@
 import postgres from "postgres"
-import { ProductField, UserField } from "./definitions"
+import { ProductField, UserField, ReviewField } from "./definitions"
 import { products as placeholderProducts } from "./placeholder-data"
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
@@ -129,5 +129,59 @@ export async function getRequests() {
     })
   )
 
-  return requestsWithProducts
+  return requestsWithProducts;
+}
+// Updated the fetchProductReviews function in data.ts
+// In  data.ts file, updated the fetchProductWithReviews function:
+
+export async function fetchProductWithReviews(id: string) {
+  try {
+    const products = await sql<ProductField[]>`
+      SELECT
+        p.*,
+        COALESCE(AVG(r.rating), 0) as average_rating,
+        COUNT(r.id) as review_count
+      FROM products p
+      LEFT JOIN ratings r ON p.id = r.product_id
+      WHERE p.id = ${id}
+      GROUP BY p.id
+    `
+
+    const product = products[0] || null
+    
+    // Ensure all numeric fields are properly converted
+    if (product) {
+      product.average_rating = product.average_rating ? Number(product.average_rating) : 0;
+      product.review_count = product.review_count ? Number(product.review_count) : 0;
+      product.price = Number(product.price); // Ensure price is also a number
+    }
+    
+    return product
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch product with reviews.")
+  }
+}
+
+export async function fetchProductReviews(productId: string) {
+  try {
+    const reviews = await sql<ReviewField[]>`
+      SELECT 
+        r.id,
+        r.product_id,
+        r.user_id,
+        r.rating,
+        r.review,
+        r.created_at,
+        u.name as user_name
+      FROM ratings r
+      LEFT JOIN users u ON r.user_id = u.id
+      WHERE r.product_id = ${productId}
+      ORDER BY r.created_at DESC
+    `
+    return reviews
+  } catch (err) {
+    console.error("Database Error:", err)
+    throw new Error("Failed to fetch product reviews.")
+  }
 }

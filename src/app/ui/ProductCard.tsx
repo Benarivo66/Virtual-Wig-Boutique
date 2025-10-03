@@ -54,9 +54,12 @@ export default function ProductCard({
     }).format(price)
   }
 
-  // Generate star rating display
+  // Generate star rating display - FIXED VERSION
   const renderStarRating = (rating: number | null | undefined) => {
-    if (!rating || rating === 0) {
+    // Convert rating to number and handle null/undefined cases
+    const numericRating = rating ? Number(rating) : 0;
+    
+    if (!numericRating || numericRating === 0) {
       return (
         <div className="flex items-center gap-1">
           <div className="flex items-center">
@@ -73,8 +76,8 @@ export default function ProductCard({
     }
 
     const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 !== 0
+    const fullStars = Math.floor(numericRating)
+    const hasHalfStar = numericRating % 1 !== 0
 
     // Full stars
     for (let i = 0; i < fullStars; i++) {
@@ -97,7 +100,7 @@ export default function ProductCard({
     }
 
     // Empty stars
-    const remainingStars = 5 - Math.ceil(rating)
+    const remainingStars = 5 - Math.ceil(numericRating)
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
         <FaRegStar key={`empty-${i}`} className="text-gray-300 text-sm" />
@@ -108,7 +111,7 @@ export default function ProductCard({
       <div className="flex items-center gap-1">
         <div className="flex items-center">{stars}</div>
         <span className="text-xs text-gray-600 ml-1">
-          ({rating.toFixed(1)})
+          ({numericRating.toFixed(1)})
         </span>
       </div>
     )
@@ -251,7 +254,7 @@ export default function ProductCard({
           handleCardClick()
         }
       }}
-      aria-label={`${name} - ${category} wig, ${formatPrice(price)}`}
+      aria-label={`${name} - ${category} wig, ${formatPrice(Number(price))}`}
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
@@ -339,7 +342,7 @@ export default function ProductCard({
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <div className="flex flex-col">
             <span className="text-xl font-bold text-gray-900">
-              {formatPrice(price)}
+              {formatPrice(Number(price))}
             </span>
           </div>
 
