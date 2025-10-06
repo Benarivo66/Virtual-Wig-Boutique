@@ -8,6 +8,7 @@ import { ProductField } from "./lib/definitions"
 import { products as placeholderProducts } from "./lib/placeholder-data"
 import { getUniqueCategories } from "./lib/utils"
 import { useProductFilters } from "./lib/hooks"
+import WigTip from "@/app/ui/displayWigTip"
 import "./page.css"
 
 export default function Home() {
@@ -195,6 +196,11 @@ export default function Home() {
         <section className="section-spacing hero">
           <HeroCard />
         </section>
+
+            {/* Wig Tips Section */}
+      <WigTip/>
+
+
 
         {/* Featured Products Carousel */}
         <section className="section-spacing featured">
