@@ -3,10 +3,11 @@ import { fetchProductById } from "@/app/lib/data"
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> } // Keep it as Promise
 ) {
   try {
-    const id = (await params).id
+    // ✅ Correct way in Next.js 15 - await the params
+    const { id } = await params
     console.log('Fetching product with ID:', id)
     
     const product = await fetchProductById(id)
@@ -33,5 +34,3 @@ export async function GET(
     )
   }
 }
-
-// added this change
