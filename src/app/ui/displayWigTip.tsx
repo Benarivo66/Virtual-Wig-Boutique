@@ -17,7 +17,7 @@ export default function WigTip() {
   </h2>
   <div className="flex justify-center">
     <div className="relative hover:shadow-xl flex items-center justify-center text-center">
-      <p className="text-lg font-medium text-gray-700 dark:text-gray-100 leading-relaxed italic">
+      <p className="text-lg font-medium text-black-700 dark:text-gray-100 leading-relaxed italic">
         <b>{tip ? `“${tip}”` : "Loading tip..."}</b>
       </p>
     </div>
