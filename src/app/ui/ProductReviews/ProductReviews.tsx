@@ -6,24 +6,27 @@ function ProductReviews({
   productId,
   userId,
   productReviews,
-  onReviewSubmitted, // Add this prop
+  onReviewSubmitted,
+  hasPurchased = false, // Add this prop
 }: {
   productId: string;
   userId: string;
   productReviews: any;
-  onReviewSubmitted?: () => void; // Make it optional
+  onReviewSubmitted?: () => void;
+  hasPurchased?: boolean; // Add purchase status
 }) {
   return (
     <>
       <div className="product-reviews">
         <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
         
-        {/* Review Form - Only show if user is logged in */}
+        {/* Review Form - Only show if user is logged in AND has purchased */}
         {userId ? (
           <CreateReviewForm 
             productId={productId} 
             userId={userId} 
-            onReviewSubmitted={onReviewSubmitted} // Pass it down
+            onReviewSubmitted={onReviewSubmitted}
+            hasPurchased={hasPurchased} // Pass the purchase status
           />
         ) : (
           <div className="mb-8 p-4 bg-gray-50 rounded-lg">
@@ -43,19 +46,29 @@ function ProductReviews({
             <div className="space-y-6">
               {productReviews.map((review: any) => (
                 <div key={review.id} className="review bg-white p-6 rounded-lg shadow-sm border">
-                  {/* Star Rating */}
-                  <div className="star-ratings flex items-center mb-3">
-                    <div className="flex text-yellow-400 mr-2">
-                      {Array.from({ length: review.rating }, (_, i) => (
-                        <FaStar key={`full-${i}`} className="text-lg" />
-                      ))}
-                      {Array.from({ length: 5 - review.rating }, (_, i) => (
-                        <FaRegStar key={`empty-${i}`} className="text-lg" />
-                      ))}
+                  {/* Star Rating and Verified Badge */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <div className="flex text-yellow-400 mr-2">
+                        {Array.from({ length: review.rating }, (_, i) => (
+                          <FaStar key={`full-${i}`} className="text-lg" />
+                        ))}
+                        {Array.from({ length: 5 - review.rating }, (_, i) => (
+                          <FaRegStar key={`empty-${i}`} className="text-lg" />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {review.rating}.0 out of 5
+                      </span>
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {review.rating}.0 out of 5
-                    </span>
+                    
+                    {/* Verified Purchase Badge */}
+                    {review.purchase_verified && (
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                        Verified Purchase
+                      </span>
+                    )}
                   </div>
 
                   {/* Review Content */}

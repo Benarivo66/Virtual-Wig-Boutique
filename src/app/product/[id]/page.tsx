@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -19,7 +19,10 @@ import ProductReviews from "@/app/ui/ProductReviews/ProductReviews"
 
 export default function ProductDetailPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const productId = params.id as string
+
+  // ✅ ALL HOOKS MUST BE CALLED AT THE TOP - NO EXCEPTIONS
   const [product, setProduct] = useState<ProductField | null>(null)
   const [reviews, setReviews] = useState<ReviewField[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,9 +32,30 @@ export default function ProductDetailPage() {
   >("idle")
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [hasPurchased, setHasPurchased] = useState(false)
+  const [isValidProduct, setIsValidProduct] = useState(true) // ✅ NEW: Track validity
 
   const { addItem } = useCart()
   const { showSuccess, showError } = useToast()
+
+  // Auto-scroll to reviews when coming from dashboard
+  useEffect(() => {
+    const shouldReview = searchParams.get('review');
+    
+    if (shouldReview === 'true') {
+      setTimeout(() => {
+        const reviewsSection = document.getElementById('reviews-section');
+        if (reviewsSection) {
+          reviewsSection.scrollIntoView({ behavior: 'smooth' });
+          reviewsSection.style.transition = 'all 0.5s ease';
+          reviewsSection.style.boxShadow = '0 0 0 2px #fbbf24';
+          setTimeout(() => {
+            reviewsSection.style.boxShadow = 'none';
+          }, 2000);
+        }
+      }, 1000);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function checkAuth() {
@@ -39,7 +63,7 @@ export default function ProductDetailPage() {
         const response = await fetch('/api/auth/me')
         if (response.ok) {
           const userData = await response.json()
-          setCurrentUserId(userData.user.id)
+          setCurrentUserId(userData.user?.id || userData.id)
         } else {
           setCurrentUserId(null)
         }
@@ -54,48 +78,91 @@ export default function ProductDetailPage() {
     checkAuth()
   }, [])
 
+  // Check purchase status when user ID is available
   useEffect(() => {
+    async function checkPurchaseStatus() {
+      if (currentUserId && productId && isValidProduct) {
+        try {
+          const response = await fetch(`/api/check-purchase?userId=${currentUserId}&productId=${productId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setHasPurchased(data.hasPurchased);
+          }
+        } catch (error) {
+          console.error('Failed to check purchase status:', error);
+          setHasPurchased(false);
+        }
+      }
+    }
+
+    checkPurchaseStatus();
+  }, [currentUserId, productId, isValidProduct]);
+
+  useEffect(() => {
+    // ✅ Check product validity and load data
+    if (!productId || productId === 'undefined') {
+      setIsValidProduct(false);
+      setLoading(false);
+      return;
+    }
+
+    setIsValidProduct(true);
+
     async function loadProductData() {
       try {
         setLoading(true)
         setError(null)
 
-      // In your loadProductData function, replace the product fetch section with:
+        console.log('🔄 Fetching product with ID:', productId);
 
-// Fetch product data with better error handling
-const productResponse = await fetch(`/api/products/${productId}`)
+        // Method 1: Try the specific product endpoint first
+        let productData = null;
+        try {
+          const productResponse = await fetch(`/api/products/${productId}`)
+          console.log('📡 Specific product API response status:', productResponse.status);
+          
+          if (productResponse.ok) {
+            productData = await productResponse.json();
+            console.log('✅ Product data from specific endpoint:', productData);
+          } else {
+            console.warn('⚠️ Specific product endpoint failed, trying fallback...');
+            throw new Error(`Specific endpoint failed: ${productResponse.status}`);
+          }
+        } catch (specificError) {
+          console.log('🔄 Falling back to products list API');
+          
+          // Method 2: Fallback - fetch all products and find the matching one
+          const allProductsResponse = await fetch('/api/products');
+          if (allProductsResponse.ok) {
+            const allProducts = await allProductsResponse.json();
+            console.log('📦 All products fetched:', allProducts.length);
+            
+            productData = allProducts.find((p: ProductField) => p.id === productId);
+            console.log('🔍 Found product in list:', !!productData);
+            
+            if (!productData) {
+              throw new Error("Product not found in products list");
+            }
+          } else {
+            throw new Error("Failed to load products list");
+          }
+        }
 
-if (!productResponse.ok) {
-  let errorMessage = "Product not found"
-  try {
-    // Try to parse error response as JSON
-    const errorData = await productResponse.json()
-    errorMessage = errorData.error || errorData.message || errorData.details || `Error ${productResponse.status}: ${productResponse.statusText}`
-  } catch (jsonError) {
-    // If JSON parsing fails, use status text
-    errorMessage = `Error ${productResponse.status}: ${productResponse.statusText}`
-  }
-  
-  // If it's a 500 error, provide more specific message
-  if (productResponse.status === 500) {
-    errorMessage = "Server error loading product. Please try again later."
-  }
-  
-  throw new Error(errorMessage)
-}
-
-// Parse the successful response
-const productData = await productResponse.json()
-if (!productData) {
-  throw new Error("Product data is empty")
-}
-setProduct(productData)
+        if (!productData) {
+          throw new Error("Product data is empty");
+        }
+        
+        setProduct(productData)
 
         // Fetch reviews for this product
         try {
-          const reviewsResponse = await fetch(`/api/reviews?productId=${productId}`)
+          console.log('🔄 Fetching reviews for product:', productId);
+          const reviewsResponse = await fetch(`/api/auth/reviews/${productId}`)
+          console.log('📡 Reviews API response status:', reviewsResponse.status);
+          
           if (reviewsResponse.ok) {
             const reviewsData = await reviewsResponse.json()
+            console.log('✅ Reviews data received:', reviewsData);
             setReviews(reviewsData)
           } else if (reviewsResponse.status === 404) {
             console.warn("Reviews endpoint not found, showing empty reviews")
@@ -113,15 +180,37 @@ setProduct(productData)
         console.error("Failed to load product:", err)
         const errorMessage = err instanceof Error ? err.message : "Failed to load product. Please try again later."
         setError(errorMessage)
+        setIsValidProduct(false)
       } finally {
         setLoading(false)
       }
     }
 
-    if (productId) {
-      loadProductData()
-    }
+    loadProductData()
   }, [productId])
+
+  // ✅ EARLY RETURN AT THE END - AFTER ALL HOOKS
+  if (!isValidProduct) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Invalid Product
+          </h2>
+          <p className="text-gray-600 mb-6">
+            The product ID is invalid. Please check the URL and try again.
+          </p>
+          <Link
+            href="/products"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Products
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const formatPrice = (price: number): string => {
     return new Intl.NumberFormat("en-US", {
@@ -132,7 +221,6 @@ setProduct(productData)
   }
 
   const renderStarRating = (rating: number | null | undefined) => {
-    // Convert rating to number and handle null/undefined cases
     const numericRating = rating ? Number(rating) : 0;
     
     if (!numericRating || numericRating === 0) {
@@ -296,16 +384,13 @@ setProduct(productData)
 
   // Handle review submission success
   const handleReviewSubmitted = async () => {
-    // Refresh reviews after a new review is submitted
     try {
-      // Refresh reviews
-      const reviewsResponse = await fetch(`/api/reviews?productId=${productId}`)
+      const reviewsResponse = await fetch(`/api/auth/reviews/${productId}`)
       if (reviewsResponse.ok) {
         const reviewsData = await reviewsResponse.json()
         setReviews(reviewsData)
       }
       
-      // Refresh product data - force a fresh fetch
       const productResponse = await fetch(`/api/products/${productId}?refresh=${Date.now()}`)
       if (productResponse.ok) {
         const productData = await productResponse.json()
@@ -486,12 +571,13 @@ setProduct(productData)
 
         {/* Reviews Section */}
         <div className="mt-12 bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="p-8">
+          <div className="p-8" id="reviews-section">
             <ProductReviews 
               productId={productId} 
               userId={currentUserId || ""} 
               productReviews={reviews}
               onReviewSubmitted={handleReviewSubmitted}
+              hasPurchased={hasPurchased}
             />
           </div>
         </div>
