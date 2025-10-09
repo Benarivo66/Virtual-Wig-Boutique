@@ -31,7 +31,7 @@ export default function UserOrders({ user, orders }: UserOrdersProps) {
         <div className="max-w-md mx-auto">
           <div className="text-6xl mb-4 text-gray-300">📦</div>
           <h3 className="text-xl font-semibold text-gray-600 mb-2">No orders yet</h3>
-          <p className="text-gray-500 mb-6">You haven't placed any orders yet.</p>
+         <p className="text-gray-500 mb-6">You haven&apos;t placed any orders yet.</p>
           <a 
             href="/products" 
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
