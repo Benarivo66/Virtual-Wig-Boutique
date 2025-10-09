@@ -106,6 +106,12 @@ export default function CreateProductForm() {
         )}
       </div>
 
+      {/* Upload Warning Note */}
+<div className="p-3 bg-yellow-50 border border-yellow-400 rounded-md text-yellow-800 text-sm">
+  ⚠️ Please upload <span className="font-semibold">either an image or a video</span> — not both.
+</div>
+
+
       {/* Image Upload */}
       <div>
         <label className="block text-sm font-medium">Image</label>

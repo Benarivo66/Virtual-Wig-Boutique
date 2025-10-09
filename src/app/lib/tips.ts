@@ -1,0 +1,22 @@
+export const wigTips = [
+  "Keep your wig clean by washing it every 8–10 wears with wig-specific shampoo and conditioner.",
+  "Always detangle your wig before washing using a wide-tooth comb or wig brush, starting from the ends upward.",
+  "Avoid rubbing when washing your wig—swish it gently in cool water to prevent tangling.",
+  "Use a light leave-in conditioner made for wigs to keep fibers soft and reduce frizz.",
+  "Avoid heat on synthetic wigs unless they are labeled heat-resistant; heat can melt fibers.",
+  "Use a heat protectant spray and low heat setting when styling human hair wigs.",
+  "Customize your wig by trimming, layering, or tinting the lace to match your skin tone for a natural look.",
+  "Store your wig on a stand or mannequin head when not in use to maintain shape and airflow.",
+  "Protect your wig at night with a silk or satin bonnet or use a silk pillowcase to reduce friction.",
+  "Take care of your natural hair and scalp underneath the wig by keeping them clean and moisturized.",
+  "Wear a wig cap to protect your natural hair and give the wig a smooth, secure base.",
+  "Align your wig’s ear tabs evenly and position the front hairline slightly below your natural one for realism.",
+  "Secure your wig with bobby pins or wig glue in windy weather to prevent it from shifting or flying off.",
+  "Choose the right wig density — lighter for everyday wear (120–130%) and fuller for special occasions (150–180%).",
+  "Store wigs in a cool, dry place away from sunlight and heat to prevent fading and damage.",
+  "Avoid applying heavy oils to synthetic wigs as they weigh down the fibers and attract dirt.",
+  "Restyle your wig periodically using rollers, steam, or light trimming to keep it looking fresh.",
+  "Pick wigs that fit your lifestyle — shorter or synthetic styles are easier for active users.",
+  "Be confident! Confidence enhances your overall look and helps you wear your wig proudly.",
+  "Rotate between two or more wigs to extend their lifespan and keep your style versatile."
+];

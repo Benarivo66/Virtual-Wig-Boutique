@@ -8,7 +8,7 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 export async function GET(request: NextRequest) {
   try {
     console.log('🚀 Orders API called');
-    
+
     // Get token from cookies
     const token = request.cookies.get('auth-token')?.value;
 
@@ -59,28 +59,27 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([]);
     }
 
-    // FIXED: Query products directly from request_product (no JOIN needed)
+    // Query products for each order
     let allOrderProducts: any[] = [];
 
-   // In app/api/orders/route.ts - FIXED SQL QUERY
-for (const order of userOrders) {
-  try {
-    const productsForOrder = await sql`
-      SELECT 
-        request_id,
-        product_id,
-        name,
-        quantity,
-        price
-      FROM request_product 
-      WHERE request_id = ${order.id}
-    `;
-    allOrderProducts = [...allOrderProducts, ...productsForOrder];
-    console.log(`📦 Order ${order.id} has ${productsForOrder.length} products`);
-  } catch (error) {
-    console.error(`❌ Error fetching products for order ${order.id}:`, error);
-  }
-}
+    for (const order of userOrders) {
+      try {
+        const productsForOrder = await sql`
+          SELECT 
+            request_id,
+            product_id,
+            name,
+            quantity,
+            price
+          FROM request_product 
+          WHERE request_id = ${order.id}
+        `;
+        allOrderProducts = [...allOrderProducts, ...productsForOrder];
+        console.log(`📦 Order ${order.id} has ${productsForOrder.length} products`);
+      } catch (error) {
+        console.error(`❌ Error fetching products for order ${order.id}:`, error);
+      }
+    }
 
     console.log('✅ All products query completed');
     console.log('📊 Total products found:', allOrderProducts.length);
@@ -91,7 +90,7 @@ for (const order of userOrders) {
         .filter(product => product.request_id === order.id)
         .map(product => ({
           product_id: product.product_id,
-          name: product.name,  // Use the name directly from request_product
+          name: product.name,
           quantity: product.quantity,
           price: parseFloat(product.price)
         }));
