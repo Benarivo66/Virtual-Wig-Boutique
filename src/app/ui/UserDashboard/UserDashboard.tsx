@@ -112,6 +112,22 @@ export default function UserDashboard({ user }: UserDashboardProps) {
     return productId && productId !== 'undefined' && productId.length > 10;
   };
 
+  // Transform orders data for UserOrders component
+  const transformOrdersForDisplay = () => {
+    return orders.map(order => ({
+      id: order.id,
+      createdAt: order.created_at,
+      status: order.status as "pending" | "completed" | "cancelled",
+      totalAmount: order.total_amount,
+      items: order.items.map(item => ({
+        id: item.product_id,
+        productName: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }))
+    }));
+  };
+
   // Update the overview stats with real order count
   const totalOrders = orders.length
   const totalOrderItems = orders.reduce((sum, order) => sum + order.items.length, 0)
@@ -327,14 +343,27 @@ export default function UserDashboard({ user }: UserDashboardProps) {
             </div>
           )}
 
-          {activeTab === "orders" && (
-            <div className="orders-content">
-              <div className="section-header">
-                <h2>Your Orders</h2>
-                <p>Track and manage your purchases</p>
-              </div>
-            </div>
-          )}
+ {activeTab === "orders" && (
+  <div className="orders-content">
+    <div className="section-header">
+      <h2>Your Orders</h2>
+      <p>Track and manage your purchases</p>
+    </div>
+    
+    {/* Add UserOrders component with transformed data */}
+    {ordersLoading ? (
+      <div className="loading-state">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p>Loading your orders...</p>
+      </div>
+    ) : (
+      <UserOrders 
+        user={user} 
+        orders={transformOrdersForDisplay()} 
+      />
+    )}
+  </div>
+)}
 
           {activeTab === "wishlist" && (
             <div className="wishlist-content">

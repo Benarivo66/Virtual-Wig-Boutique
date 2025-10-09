@@ -23,20 +23,23 @@ function CreateReviewForm({
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Reset form when state changes to success
-  useEffect(() => {
-    if (state?.message && !state.errors && !hasSubmitted) {
-      setHasSubmitted(true);
-      setContent("");
-      setRating(5);
-      
-      // Call the callback after a short delay to ensure state is updated
-      setTimeout(() => {
-        if (onReviewSubmitted) {
-          onReviewSubmitted();
-        }
-      }, 100);
-    }
-  }, [state, onReviewSubmitted, hasSubmitted]);
+// In the useEffect that handles successful submission:
+useEffect(() => {
+  if (state?.message && !state.errors && !hasSubmitted) {
+    setHasSubmitted(true);
+    setContent("");
+    setRating(5);
+    
+    // Force refresh all data
+    setTimeout(() => {
+      if (onReviewSubmitted) {
+        onReviewSubmitted();
+      }
+      // Force page reload as last resort
+      window.location.reload();
+    }, 1500);
+  }
+}, [state, onReviewSubmitted, hasSubmitted]);
 
   // Reset hasSubmitted when form is reset
   useEffect(() => {
