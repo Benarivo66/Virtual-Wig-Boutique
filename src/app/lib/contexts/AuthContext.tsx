@@ -16,23 +16,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [error, setError] = useState<string | null>(null);
     const { showToast } = useToast();
 
-    // Check for existing authentication on mount
-    useEffect(() => {
-        checkAuthStatus();
-    }, []);
-
-    // Set up automatic token refresh
-    useEffect(() => {
-        if (user) {
-            // Set up token refresh interval (every 14 minutes for 15-minute tokens)
-            const refreshInterval = setInterval(() => {
-                refreshAuth();
-            }, 14 * 60 * 1000);
-
-            return () => clearInterval(refreshInterval);
-        }
-    }, [user]);
-
     const checkAuthStatus = useCallback(async () => {
         try {
             setError(null);
@@ -61,6 +44,47 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setIsLoading(false);
         }
     }, [isLoading]);
+
+    const refreshAuth = useCallback(async (): Promise<void> => {
+        try {
+            setError(null);
+            const response = await fetch('/api/auth/refresh', {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data.user);
+            } else {
+                // If refresh fails, user needs to log in again
+                setUser(null);
+                setError('Session expired. Please log in again.');
+                showToast('warning', 'Session expired', 'Please log in again.');
+            }
+        } catch (error) {
+            console.error('Token refresh failed:', error);
+            setUser(null);
+            setError('Unable to refresh session');
+        }
+    }, [showToast]);
+
+    // Check for existing authentication on mount
+    useEffect(() => {
+        checkAuthStatus();
+    }, [checkAuthStatus]);
+
+    // Set up automatic token refresh
+    useEffect(() => {
+        if (user) {
+            // Set up token refresh interval (every 14 minutes for 15-minute tokens)
+            const refreshInterval = setInterval(() => {
+                refreshAuth();
+            }, 14 * 60 * 1000);
+
+            return () => clearInterval(refreshInterval);
+        }
+    }, [user, refreshAuth]);
 
     const login = useCallback(async (email: string, password: string): Promise<UserPayload> => {
         setIsLoading(true);
@@ -163,30 +187,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
             showToast('info', 'Logged out');
         } finally {
             setIsLoading(false);
-        }
-    }, [showToast]);
-
-    const refreshAuth = useCallback(async (): Promise<void> => {
-        try {
-            setError(null);
-            const response = await fetch('/api/auth/refresh', {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data.user);
-            } else {
-                // If refresh fails, user needs to log in again
-                setUser(null);
-                setError('Session expired. Please log in again.');
-                showToast('warning', 'Session expired', 'Please log in again.');
-            }
-        } catch (error) {
-            console.error('Token refresh failed:', error);
-            setUser(null);
-            setError('Unable to refresh session');
         }
     }, [showToast]);
 

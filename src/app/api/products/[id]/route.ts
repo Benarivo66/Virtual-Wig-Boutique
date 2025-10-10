@@ -6,7 +6,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = (await params).id
+    const { id } = await params // AWAIT THE PARAMS
+    console.log('🔄 API: Fetching product with ID:', id)
+    
+    if (!id || id === 'undefined') {
+      return new NextResponse(JSON.stringify({ error: "Product ID is required" }), {
+        status: 400,
+      })
+    }
+
     const product = await fetchProductById(id)
 
     if (!product) {
@@ -32,7 +40,14 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = (await params).id
+    const { id } = await params // AWAIT THE PARAMS
+    
+    if (!id || id === 'undefined') {
+      return new NextResponse(JSON.stringify({ error: "Product ID is required" }), {
+        status: 400,
+      })
+    }
+
     // First check if product exists
     const product = await fetchProductById(id)
 

@@ -9,10 +9,12 @@ function CreateReviewForm({
   productId,
   userId,
   onReviewSubmitted,
+  hasPurchased = false, // New prop to check purchase status
 }: {
   productId: string;
   userId: string;
   onReviewSubmitted?: () => void;
+  hasPurchased?: boolean; // Add purchase status
 }) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createReview, initialState);
@@ -21,20 +23,23 @@ function CreateReviewForm({
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Reset form when state changes to success
-  useEffect(() => {
-    if (state?.message && !state.errors && !hasSubmitted) {
-      setHasSubmitted(true);
-      setContent("");
-      setRating(5);
-      
-      // Call the callback after a short delay to ensure state is updated
-      setTimeout(() => {
-        if (onReviewSubmitted) {
-          onReviewSubmitted();
-        }
-      }, 100);
-    }
-  }, [state, onReviewSubmitted, hasSubmitted]);
+// In the useEffect that handles successful submission:
+useEffect(() => {
+  if (state?.message && !state.errors && !hasSubmitted) {
+    setHasSubmitted(true);
+    setContent("");
+    setRating(5);
+    
+    // Force refresh all data
+    setTimeout(() => {
+      if (onReviewSubmitted) {
+        onReviewSubmitted();
+      }
+      // Force page reload as last resort
+      window.location.reload();
+    }, 1500);
+  }
+}, [state, onReviewSubmitted, hasSubmitted]);
 
   // Reset hasSubmitted when form is reset
   useEffect(() => {
@@ -49,8 +54,37 @@ function CreateReviewForm({
       alert("You must be signed in to submit a review.");
       return;
     }
+    
+    if (!hasPurchased) {
+      e.preventDefault();
+      alert("You must purchase this product before submitting a review.");
+      return;
+    }
+    
     // Reset submission state when form is submitted again
     setHasSubmitted(false);
+  }
+
+  // If user hasn't purchased, show a message instead of the form
+  if (!hasPurchased) {
+    return (
+      <div className="review-form bg-white p-6 rounded-lg shadow-sm border mb-8">
+        <div className="text-center py-8">
+          <div className="text-yellow-500 text-4xl mb-4">🛒</div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Purchase to Review
+          </h3>
+          <p className="text-gray-600 mb-4">
+            You need to purchase this product before you can write a review.
+          </p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 inline-block">
+            <p className="text-yellow-700 text-sm">
+              Only verified purchasers can submit reviews.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -67,6 +101,11 @@ function CreateReviewForm({
         <legend className="review-form__legend text-xl font-semibold text-gray-900 mb-4">
           Write Your Review
         </legend>
+
+        {/* Verified Purchaser Badge */}
+        <div className="bg-green-50 border border-green-200 rounded-md p-3 inline-flex items-center">
+          <span className="text-green-600 text-sm font-medium">✓ Verified Purchaser</span>
+        </div>
 
         {/* Star Rating */}
         <div className="review-form__group">
@@ -141,6 +180,13 @@ function CreateReviewForm({
               {messages.join(", ")}
             </p>
           ))}
+        </div>
+      )}
+
+      {/* Purchase Required Message */}
+      {state?.message && state.message.includes("must purchase") && (
+        <div className="review-form__errors mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+          <p className="text-yellow-700 text-sm">{state.message}</p>
         </div>
       )}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './Toast.css';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -35,6 +35,13 @@ const Toast: React.FC<ToastProps> = ({
     const [isVisible, setIsVisible] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
 
+    const handleClose = useCallback(() => {
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose(id);
+        }, 300); // Match CSS transition duration
+    }, [id, onClose]);
+
     useEffect(() => {
         // Trigger entrance animation
         const timer = setTimeout(() => setIsVisible(true), 10);
@@ -48,14 +55,7 @@ const Toast: React.FC<ToastProps> = ({
             }, duration);
             return () => clearTimeout(timer);
         }
-    }, [duration]);
-
-    const handleClose = () => {
-        setIsExiting(true);
-        setTimeout(() => {
-            onClose(id);
-        }, 300); // Match CSS transition duration
-    };
+    }, [duration, handleClose]);
 
     const getIcon = () => {
         switch (type) {

@@ -1,5 +1,7 @@
 import { getRequests } from "@/app/lib/data";
 
+export const dynamic = 'force-dynamic' // Add this line
+
 export default async function AdminRequestsPage() {
   const requests = await getRequests();
 
