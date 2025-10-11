@@ -113,32 +113,32 @@ export default function ProductDetailPage() {
         setLoading(true)
         setError(null)
 
-        console.log('🔄 Fetching product with ID:', productId);
+        console.log('Fetching product with ID:', productId);
 
         // Method 1: Try the specific product endpoint first
         let productData = null;
         try {
           const productResponse = await fetch(`/api/products/${productId}`)
-          console.log('📡 Specific product API response status:', productResponse.status);
+          console.log('Specific product API response status:', productResponse.status);
           
           if (productResponse.ok) {
             productData = await productResponse.json();
-            console.log('✅ Product data from specific endpoint:', productData);
+            console.log('Product data from specific endpoint:', productData);
           } else {
-            console.warn('⚠️ Specific product endpoint failed, trying fallback...');
+            console.warn('Specific product endpoint failed, trying fallback...');
             throw new Error(`Specific endpoint failed: ${productResponse.status}`);
           }
         } catch (specificError) {
-          console.log('🔄 Falling back to products list API');
+          console.log('Falling back to products list API');
           
           // Method 2: Fallback - fetch all products and find the matching one
           const allProductsResponse = await fetch('/api/products');
           if (allProductsResponse.ok) {
             const allProducts = await allProductsResponse.json();
-            console.log('📦 All products fetched:', allProducts.length);
+            console.log('All products fetched:', allProducts.length);
             
             productData = allProducts.find((p: ProductField) => p.id === productId);
-            console.log('🔍 Found product in list:', !!productData);
+            console.log('Found product in list:', !!productData);
             
             if (!productData) {
               throw new Error("Product not found in products list");
@@ -156,13 +156,13 @@ export default function ProductDetailPage() {
 
         // Fetch reviews for this product
         try {
-          console.log('🔄 Fetching reviews for product:', productId);
+          console.log('Fetching reviews for product:', productId);
           const reviewsResponse = await fetch(`/api/auth/reviews/${productId}`)
-          console.log('📡 Reviews API response status:', reviewsResponse.status);
+          console.log('Reviews API response status:', reviewsResponse.status);
           
           if (reviewsResponse.ok) {
             const reviewsData = await reviewsResponse.json()
-            console.log('✅ Reviews data received:', reviewsData);
+            console.log('Reviews data received:', reviewsData);
             setReviews(reviewsData)
           } else if (reviewsResponse.status === 404) {
             console.warn("Reviews endpoint not found, showing empty reviews")

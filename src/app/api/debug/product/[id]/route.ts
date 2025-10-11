@@ -10,7 +10,7 @@ export async function GET(
   try {
     const { id } = await params; // AWAIT THE PARAMS
     
-    console.log('🔍 DEBUG: Fetching product with ID:', id);
+    console.log('DEBUG: Fetching product with ID:', id);
 
     if (!id || id === 'undefined') {
       return NextResponse.json(
@@ -24,7 +24,7 @@ export async function GET(
       SELECT * FROM products WHERE id = ${id}
     `;
 
-    console.log('📦 DEBUG: Products found:', products.length);
+    console.log('DEBUG: Products found:', products.length);
 
     if (products.length === 0) {
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function GET(
     }
 
     const product = products[0];
-    console.log('✅ DEBUG: Product data:', product);
+    console.log('DEBUG: Product data:', product);
     
     return NextResponse.json({
       success: true,
@@ -47,7 +47,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('❌ DEBUG: Database Error:', error);
+    console.error('DEBUG: Database Error:', error);
     return NextResponse.json(
       { 
         error: "Database error",

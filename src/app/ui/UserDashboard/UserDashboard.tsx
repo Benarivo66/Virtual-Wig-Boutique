@@ -53,24 +53,24 @@ export default function UserDashboard({ user }: UserDashboardProps) {
     async function fetchOrders() {
       try {
         setOrdersLoading(true)
-        console.log('🔄 Fetching orders for user:', user.id)
+        console.log('Fetching orders for user:', user.id)
         
         const response = await fetch('/api/orders', {
           credentials: 'include',
         })
 
-        console.log('📡 Orders API response status:', response.status)
+        console.log('Orders API response status:', response.status)
         
         if (response.ok) {
           const data = await response.json()
-          console.log('📦 Orders data received:', data)
+          console.log('Orders data received:', data)
           setOrders(data)
         } else {
-          console.error('❌ Failed to fetch orders:', response.status)
+          console.error('Failed to fetch orders:', response.status)
           setOrders([])
         }
       } catch (error) {
-        console.error('❌ Error fetching orders:', error)
+        console.error('Error fetching orders:', error)
         setOrders([])
       } finally {
         setOrdersLoading(false)
