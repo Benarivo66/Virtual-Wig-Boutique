@@ -7,7 +7,7 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🚀 Orders API called');
+    console.log('Orders API called');
 
     // Get token from cookies
     const token = request.cookies.get('auth-token')?.value;
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = payload.id;
-    console.log('👤 User ID from token:', userId);
+    console.log('User ID from token:', userId);
 
     // Get user's orders
     const userOrders = await sql`
@@ -52,10 +52,10 @@ export async function GET(request: NextRequest) {
       ORDER BY created_at DESC
     `;
 
-    console.log('📊 Found orders:', userOrders.length);
+    console.log('Found orders:', userOrders.length);
 
     if (userOrders.length === 0) {
-      console.log('ℹ️ No orders found for user');
+      console.log('No orders found for user');
       return NextResponse.json([]);
     }
 
@@ -75,14 +75,14 @@ export async function GET(request: NextRequest) {
           WHERE request_id = ${order.id}
         `;
         allOrderProducts = [...allOrderProducts, ...productsForOrder];
-        console.log(`📦 Order ${order.id} has ${productsForOrder.length} products`);
+        console.log(`Order ${order.id} has ${productsForOrder.length} products`);
       } catch (error) {
-        console.error(`❌ Error fetching products for order ${order.id}:`, error);
+        console.error(`Error fetching products for order ${order.id}:`, error);
       }
     }
 
-    console.log('✅ All products query completed');
-    console.log('📊 Total products found:', allOrderProducts.length);
+    console.log('All products query completed');
+    console.log('Total products found:', allOrderProducts.length);
 
     // Combine data manually
     const ordersWithItems = userOrders.map(order => {
@@ -107,11 +107,11 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log('🎯 Final orders with items:', ordersWithItems.length);
+    console.log('Final orders with items:', ordersWithItems.length);
     
     // Log each order's items for debugging
     ordersWithItems.forEach(order => {
-      console.log(`🛒 Order ${order.id}: ${order.items.length} items`);
+      console.log(`Order ${order.id}: ${order.items.length} items`);
       order.items.forEach(item => {
         console.log(`   - ${item.name} (ID: ${item.product_id})`);
       });
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(ordersWithItems);
 
   } catch (error) {
-    console.error("❌ Error fetching orders:", error);
+    console.error("Error fetching orders:", error);
     // Return empty array on error to prevent frontend crashes
     return NextResponse.json([]);
   }
