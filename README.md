@@ -22,6 +22,13 @@ This repository is a Next.js application (App Router) with server-side Postgres 
 
    Open http://localhost:3000
 
+   **SAMPlE Users For Test**
+   - user (email: iz4comed@yahoo.com, password: 123456) Or just register a new user
+   - admin (email: juju@gmail.com, password: jujuboy)
+
+   **Deployed App**
+   https://virtual-wig-boutique.vercel.app/
+
 4. Optional: create DB tables used by examples
 
    The project contains a simple seed route at `/api/seed` (implemented in `src/app/seed/route.ts`) which can create the `request` and `request_product` tables. It requires `POSTGRES_URL` to be set and a reachable Postgres instance.

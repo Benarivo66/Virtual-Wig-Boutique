@@ -35,13 +35,6 @@ export async function POST(req: Request) {
       const userId = customFields[0]?.value || "anonymous";
       const cart = cartField ? JSON.parse(cartField.value) : [];
 
-      console.log('🔍 Payment Verification Debug:');
-      console.log('📦 User ID:', userId);
-      console.log('🛒 Cart items:', cart);
-      console.log('💰 Amount:', paystackData.amount / 100);
-      console.log('📞 Phone:', phone);
-      console.log('🏠 Address:', address);
-
       try {
         const [order] = await sql`
           INSERT INTO request (user_id, total_amount, payment_reference, status, address, phone)
@@ -49,24 +42,19 @@ export async function POST(req: Request) {
           RETURNING id;
         `;
 
-        console.log('✅ Order created with ID:', order.id);
-
         let insertedProducts = 0;
         for (const item of cart) {
-          console.log('📦 Inserting product:', item);
           try {
             await sql`
               INSERT INTO request_product (request_id, product_id, name, quantity, price)
               VALUES (${order.id}, ${item.id}, ${item.name}, ${item.quantity}, ${item.price});
             `;
             insertedProducts++;
-            console.log('✅ Product inserted successfully');
+            console.log('Product inserted successfully');
           } catch (error) {
-            console.error('❌ Failed to insert product:', error);
+            console.error('Failed to insert product:', error);
           }
         }
-
-        console.log(`🎯 Total products inserted: ${insertedProducts}/${cart.length}`);
 
         return NextResponse.json({ 
           success: true, 
@@ -78,7 +66,7 @@ export async function POST(req: Request) {
           }
         });
       } catch (dbError) {
-        console.error('❌ Database error during order creation:', dbError);
+        console.error('Database error during order creation:', dbError);
         return NextResponse.json(
           { success: false, message: "Database error during order creation" },
           { status: 500 }

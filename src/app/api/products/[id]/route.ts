@@ -6,8 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params // AWAIT THE PARAMS
-    console.log('🔄 API: Fetching product with ID:', id)
+    const { id } = await params 
     
     if (!id || id === 'undefined') {
       return new NextResponse(JSON.stringify({ error: "Product ID is required" }), {

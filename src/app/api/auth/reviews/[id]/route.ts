@@ -8,11 +8,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // ✅ Correct way in Next.js 15 - await the params
     const { id } = await params
     const productId = id
-    
-    console.log('🔍 Fetching reviews for product ID:', productId)
 
     if (!productId) {
       return new NextResponse(JSON.stringify({ error: "Product ID is required" }), {
@@ -36,8 +33,6 @@ export async function GET(
       ORDER BY r.created_at DESC
     `
 
-    console.log('📦 Reviews found:', reviews.length)
-
     if (reviews.length === 0) {
       console.log('No reviews found for product:', productId)
       return NextResponse.json([])
@@ -54,7 +49,6 @@ export async function GET(
       user_id: review.user_id
     }))
 
-    console.log('✅ Reviews formatted:', formattedReviews.length)
     return NextResponse.json(formattedReviews)
 
   } catch (error) {

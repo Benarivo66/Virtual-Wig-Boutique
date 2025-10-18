@@ -31,7 +31,6 @@ export default function CreateProductForm() {
     type: "image" | "video"
   ) {
     const file = e.target.files?.[0]
-    console.log({ file })
     if (!file) return
 
     try {

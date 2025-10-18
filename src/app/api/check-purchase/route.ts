@@ -43,8 +43,6 @@ export async function GET(request: NextRequest) {
 
     const hasPurchased = purchase.length > 0;
     
-    console.log(`🔍 Purchase check: User ${userId} for product ${productId} - ${hasPurchased ? 'PURCHASED' : 'NOT PURCHASED'}`);
-    
     return NextResponse.json({ hasPurchased });
 
   } catch (error) {
