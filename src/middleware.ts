@@ -4,8 +4,6 @@ import { verifyTokenEdge } from '@/app/lib/jwt-edge';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("Middleware check:", { pathname });
-
   // Allow API routes and static assets
   const isApiRoute = pathname.startsWith("/api/");
   const isStaticRoute =

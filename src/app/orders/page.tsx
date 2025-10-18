@@ -33,14 +33,10 @@ export default function OrdersPage() {
       try {
         setLoading(true);
         setError(null);
-        console.log('Starting to fetch orders...');
 
         const response = await fetch('/api/orders', {
-          credentials: 'include', // This sends cookies with the request
+          credentials: 'include', 
         });
-
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -57,7 +53,6 @@ export default function OrdersPage() {
         }
 
         const data = await response.json();
-        console.log('Orders data received:', data);
         setOrders(data);
       } catch (error) {
         console.error('Failed to fetch orders:', error);
