@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import CategoryFilter from "../ui/CategoryFilter/CategoryFilter"
 import ProductGrid from "../ui/ProductGrid"
 import { ProductField } from "../lib/definitions"
@@ -16,6 +16,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<string[]>([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [categoriesError, setCategoriesError] = useState<string | null>(null)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const {
     filteredProducts,
@@ -28,7 +29,7 @@ export default function ProductsPage() {
     totalResults,
   } = useProductFilters(products)
 
-  // Handle URL parameters
+  // Handle URL category
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const categoryParam = params.get("category")
@@ -45,13 +46,13 @@ export default function ProductsPage() {
         let fetchedProducts: ProductField[]
         try {
           const response = await fetch("/api/products")
-          if (!response.ok)
-            throw new Error(`HTTP error! status: ${response.status}`)
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           fetchedProducts = await response.json()
-        } catch (apiError) {
+        } catch {
           fetchedProducts = placeholderProducts as ProductField[]
         }
         setProducts(fetchedProducts)
+
         setCategoriesLoading(true)
         setCategoriesError(null)
         try {
@@ -65,10 +66,9 @@ export default function ProductsPage() {
         } finally {
           setCategoriesLoading(false)
         }
-      } catch (err) {
-        setError("Failed to load products. Please try again later.")
-        setCategoriesLoading(true)
-        setCategoriesError("Failed to load categories from API")
+      } catch {
+        setError("Failed to load products.")
+        setCategoriesError("Failed to load categories.")
         setCategories([
           "New Arrivals",
           ...getUniqueCategories(placeholderProducts as ProductField[]),
@@ -81,16 +81,40 @@ export default function ProductsPage() {
     loadProducts()
   }, [])
 
-  // Sidebar filter/sort
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category)
   }
 
   return (
-    <div className="products-page-container flex">
-      {/* Sidebar */}
-      <aside className="w-64 p-4 border-r bg-gray-50">
-        <h2 className="font-semibold text-lg mb-4">Filters</h2>
+    <div className="products-page-container flex flex-col md:flex-row relative">
+      {/* Mobile Filter Button */}
+      <div className="p-4 md:hidden">
+        <button
+          onClick={() => setIsFilterOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
+        >
+          Filters
+        </button>
+      </div>
+
+      {/* Sidebar / Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-64 bg-gray-50 border-r p-4 transform transition-transform duration-300 ease-in-out z-50
+          ${isFilterOpen ? "translate-x-0" : "-translate-x-full"}
+          md:static md:translate-x-0 md:w-64 md:block`}
+      >
+        <div className="flex justify-between items-center mb-4 md:hidden">
+          <h2 className="font-semibold text-lg">Filters</h2>
+          <button
+            onClick={() => setIsFilterOpen(false)}
+            className="text-gray-600 hover:text-gray-900 font-bold text-xl"
+          >
+            ×
+          </button>
+        </div>
+
+        <h2 className="font-semibold text-lg mb-4 hidden md:block">Filters</h2>
+
         <CategoryFilter
           categories={categories}
           selectedCategory={selectedCategory}
@@ -98,9 +122,17 @@ export default function ProductsPage() {
           loading={categoriesLoading}
           error={categoriesError}
         />
-        {/* Add sort options here if needed */}
       </aside>
-      {/* Main content */}
+
+      {/* Overlay (mobile only) */}
+      {isFilterOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 md:hidden z-40"
+          onClick={() => setIsFilterOpen(false)}
+        />
+      )}
+
+      {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">All Products</h1>
@@ -125,6 +157,7 @@ export default function ProductsPage() {
             </div>
           )}
         </div>
+
         <ProductGrid
           products={filteredProducts}
           loading={loading}

@@ -1,111 +1,198 @@
-/* Sidenav.module.css - Styling for the profile Sidenav component */
-
+/* ===========================
+   Base Sidenav Styles
+   =========================== */
 .sidenav {
-    background: #f8fafc;
-    border-radius: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    padding: 2rem 1.5rem;
-    width: 100%;
-    max-width: 320px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    font-family: inherit;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 320px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-family: inherit;
+  position: relative;
+  z-index: 100;
 }
 
 .sidenavTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
 }
 
 .sidenavList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .sidenavLink {
-    color: #334155;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    transition: background 0.2s, color 0.2s;
-    outline: none;
+  color: #334155;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
 }
 
 .sidenavLink:focus,
 .sidenavLink:hover {
-    background: #e0e7ef;
-    color: #0f172a;
+  background: #e0e7ef;
+  color: #0f172a;
 }
 
+/* ===========================
+   Hamburger Button Styles
+   =========================== */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 300;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+}
+
+.bar,
+.barOpen {
+  display: block;
+  height: 3px;
+  width: 100%;
+  border-radius: 3px;
+  background: #1e293b;
+  transition: all 0.3s ease-in-out;
+}
+
+.barOpen:nth-child(1) {
+  transform: rotate(45deg) translateY(8px);
+}
+
+.barOpen:nth-child(2) {
+  opacity: 0;
+}
+
+.barOpen:nth-child(3) {
+  transform: rotate(-45deg) translateY(-8px);
+}
+
+/* ===========================
+   Overlay for Mobile Menu
+   =========================== */
+.overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 150;
+  }
+
+  .overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* ===========================
+   Tablet Adjustments
+   =========================== */
 @media (max-width: 900px) {
-    .sidenav {
-        background: #f8fafc;
-        border-radius: 1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        padding: 2rem 1.5rem;
-        width: 100%;
-        max-width: 320px;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        font-family: inherit;
-    }
+  .sidenav {
+    max-width: 280px;
+    padding: 1.75rem 1.25rem;
+    gap: 1.25rem;
+  }
 
-    .sidenavTitle {
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-    }
+  .sidenavTitle {
+    font-size: 1.1rem;
+  }
 
-    .sidenavList {
-        gap: 0.5rem;
-    }
-
-    .sidenavLink {
-        font-size: 0.98rem;
-        padding: 0.65rem 0.75rem;
-    }
-
+  .sidenavLink {
+    font-size: 0.98rem;
+    padding: 0.65rem 0.75rem;
+  }
 }
 
-@media (max-width: 600px) {
-    .sidenav {
-        flex-direction: row;
-        max-width: 100%;
-        margin-top: 3rem;
+/* ===========================
+   Mobile Behavior
+   =========================== */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
 
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        padding: 0.5rem 0.25rem;
-        height: auto;
-        border-radius: 0;
-        box-shadow: none;
-    }
+  .sidenav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 75%;
+    max-width: 260px;
+    height: 100vh;
+    background: #f8fafc;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+    padding: 2rem 1.25rem;
+    flex-direction: column;
+    gap: 1rem;
+    transition: left 0.3s ease-in-out;
+    z-index: 200;
+  }
 
-    .sidenavTitle {
-        display: none;
-    }
+  .sidenav.open {
+    left: 0;
+  }
 
-    .sidenavList {
-        flex-direction: row;
-        gap: 0.25rem;
-        width: 100%;
-        justify-content: space-around;
-    }
+  .sidenavTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+  }
 
-    .sidenavLink {
-        font-size: 0.95rem;
-        padding: 0.5rem 0.5rem;
-        border-radius: 0.4rem;
-    }
+  .sidenavList {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sidenavLink {
+    font-size: 1rem;
+    padding: 0.75rem;
+    display: block;
+  }
+}
+
+/* ===========================
+   Accessibility & Transitions
+   =========================== */
+.sidenavLink:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+}
+
+.hamburger:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
 }

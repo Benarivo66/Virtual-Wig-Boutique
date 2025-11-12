@@ -23,7 +23,7 @@ export default function TopBar({ showSearch = true, onSearch }: TopBarProps) {
         href={"/"}
         aria-label="Virtual Wig Boutique - Go to homepage"
       >
-        Virtual Wig Boutique
+        Chi-Hairlux
       </Link>
 
       <TopBarClient showSearch={showSearch} onSearch={onSearch} />
