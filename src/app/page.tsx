@@ -212,10 +212,6 @@ export default function Home() {
           </div>
           <ProductCarousel
             products={featuredProducts}
-            autoPlay={true}
-            autoPlayInterval={5000}
-            showDots={true}
-            showArrows={true}
             loading={loading}
             error={error}
           />
