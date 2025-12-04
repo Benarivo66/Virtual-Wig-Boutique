@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem;
+    /* padding: 1rem 2rem; */
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     position: fixed;
@@ -14,12 +14,13 @@
 }
 
 .topbar-logo {
-    font-size: 2rem;
+    font-size: 4rem;
     font-weight: bold;
     letter-spacing: -1px;
     color: #2b6777;
     flex-shrink: 0;
-    margin-left: 20%;
+    margin: 0 1rem;
+    /* margin-left: 20%; */
 }
 
 .topbar-search {
@@ -149,7 +150,7 @@
     }
 
     .topbar-logo {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         flex-shrink: 0;
     }
 
@@ -198,10 +199,10 @@
         align-items: center;
     }
 
-    .topbar-logo {
+    /* .topbar-logo {
         font-size: 1.25rem;
         order: 1;
-    }
+    } */
 
     .topbar-search {
         margin: 0 0.5rem;
