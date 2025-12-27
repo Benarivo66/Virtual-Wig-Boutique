@@ -71,7 +71,7 @@
 .barOpen {
   display: block;
   height: 3px;
-  width: 100%;
+  width: 80%;
   border-radius: 3px;
   background: #1e293b;
   transition: all 0.3s ease-in-out;
@@ -94,26 +94,6 @@
    =========================== */
 .overlay {
   display: none;
-}
-
-@media (max-width: 768px) {
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 150;
-  }
-
-  .overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
 }
 
 /* ===========================
@@ -142,6 +122,7 @@
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
+    width: 12px;
   }
 
   .sidenav {
@@ -159,6 +140,10 @@
     gap: 1rem;
     transition: left 0.3s ease-in-out;
     z-index: 200;
+  }
+
+  .sidenav h2 {
+    margin-top: 15%;
   }
 
   .sidenav.open {
@@ -182,9 +167,25 @@
     padding: 0.75rem;
     display: block;
   }
-}
 
-/* ===========================
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 150;
+  }
+
+  .overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* ===========================
    Accessibility & Transitions
    =========================== */
 .sidenavLink:focus-visible {
@@ -196,3 +197,6 @@
   outline: 2px solid #3b82f6;
   outline-offset: 3px;
 }
+}
+
+

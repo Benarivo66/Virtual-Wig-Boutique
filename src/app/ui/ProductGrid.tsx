@@ -117,25 +117,48 @@ export default function ProductGrid({
 
     // Show products grid
     return (
-        <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-            role="grid"
-            aria-label="Product grid"
-        >
-            {products.map((product, index) => (
-                <div
-                    key={product.id}
-                    role="gridcell"
-                    aria-rowindex={Math.floor(index / 4) + 1}
-                    aria-colindex={(index % 4) + 1}
+        // <div
+        //     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+        //     role="grid"
+        //     aria-label="Product grid"
+        // >
+        //     {products.map((product, index) => (
+        //         <div
+        //             key={product.id}
+        //             role="gridcell"
+        //             aria-rowindex={Math.floor(index / 4) + 1}
+        //             aria-colindex={(index % 4) + 1}
+        //         >
+        //             <ProductCard
+        //                 product={product}
+        //                 showCategory={true}
+        //                 showRating={true}
+        //             />
+        //         </div>
+        //     ))}
+        // </div>
+
+            <div
+                className="
+                    grid 
+                    grid-cols-2 
+                    md:grid-cols-3 
+                    lg:grid-cols-4 
+                    gap-4 sm:gap-6
+                "
+                role="grid"
+                aria-label="Product grid"
                 >
+                {products.map(product => (
+                    <div key={product.id} role="gridcell">
                     <ProductCard
                         product={product}
-                        showCategory={true}
-                        showRating={true}
+                        showCategory
+                        showRating
                     />
-                </div>
-            ))}
-        </div>
+                    </div>
+                ))}
+            </div>
+
     );
 }

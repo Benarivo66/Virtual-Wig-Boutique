@@ -150,8 +150,9 @@
     }
 
     .topbar-logo {
-        font-size: 2.5rem;
+        font-size: 2.3rem;
         flex-shrink: 0;
+        margin-left: 14%;
     }
 
     .topbar-search {
