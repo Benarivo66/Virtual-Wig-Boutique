@@ -244,8 +244,9 @@
 .static-grid {
   display: grid;
   gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
   justify-content: center;
+  padding: 1%;
 }
 
 /* Product image size fix */
