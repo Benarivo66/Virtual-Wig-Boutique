@@ -339,7 +339,7 @@ export default function ProductCard({
         )}
 
         {/* Price and Add to Cart */}
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-auto pt-2 border-t border-gray-100 gap-2">
           <div className="flex flex-col">
             <span className="text-xl font-bold text-gray-900">
               {formatPrice(Number(price))}
@@ -347,14 +347,15 @@ export default function ProductCard({
           </div>
 
           <button
-            className={getAddToCartButtonStyles()}
+            className={`${getAddToCartButtonStyles()} w-full sm:w-auto text-base sm:text-sm md:text-base`}
             onClick={handleAddToCart}
             disabled={addToCartState === "loading"}
             aria-label={`Add ${name} to shopping cart`}
           >
             {getAddToCartButtonContent()}
           </button>
-        </div>
+      </div>
+
       </div>
     </div>
   )
