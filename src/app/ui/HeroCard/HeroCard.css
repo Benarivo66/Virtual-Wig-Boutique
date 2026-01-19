@@ -1,5 +1,5 @@
 .hero-component {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #23584d 0%, #2e4cd4 100%);
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 24rem;
@@ -246,7 +246,7 @@
   .hero-component {
     grid-template-columns: 1fr;
     min-height: auto;
-    border-radius: 1rem;
+    /* border-radius: 1rem; */
   }
 
   .hero-component__left {

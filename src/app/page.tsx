@@ -8,7 +8,6 @@ import { ProductField } from "./lib/definitions"
 import { products as placeholderProducts } from "./lib/placeholder-data"
 import { getUniqueCategories } from "./lib/utils"
 import { useProductFilters } from "./lib/hooks"
-import WigTip from "@/app/ui/displayWigTip"
 import "./page.css"
 
 export default function Home() {
@@ -197,11 +196,6 @@ export default function Home() {
           <HeroCard />
         </section>
 
-            {/* Wig Tips Section */}
-      <WigTip/>
-
-
-
         {/* Featured Products Carousel */}
         <section className="section-spacing featured">
           <div className="section-header left-aligned">
@@ -217,7 +211,16 @@ export default function Home() {
           />
         </section>
 
-        <div className="section-divider"></div>
+        {/* <div className="section-divider"></div> */}
+
+         <section className="section-spacing about">
+          <div className="section-header left-aligned">
+            <h2 className="section-title">About Us</h2>
+          <p>
+            <b>Chi-Hairlux</b> is a Nigerian-based wig brand established in 2021, dedicated to providing high-quality wigs at affordable wholesale prices. We deliver to all parts of Nigeria, with shipping within Lagos at ₦3,500 and interstate delivery at ₦5,000, ensuring fast and reliable service nationwide. Committed to making luxury hair accessible, we regularly offer promo deals that make our prices even more affordable. At Chi-Hairlux, customer satisfaction, quality, and value remain our top priorities
+          </p>
+          </div>
+        </section>
 
         {/* Promotional Banner */}
         <section className="section-spacing promotional">

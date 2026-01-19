@@ -1,18 +1,37 @@
+// import type { Metadata } from "next"
+// import { Geist, Geist_Mono } from "next/font/google"
+// import "./globals.css"
+// import TopBar from "./ui/TopBar/TopBar"
+// import ConditionalLayout from "./ui/ConditionalLayout"
+// import { Providers } from "./providers"
+
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// })
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// })
+
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Lora, Outfit } from "next/font/google"
 import "./globals.css"
 import TopBar from "./ui/TopBar/TopBar"
 import ConditionalLayout from "./ui/ConditionalLayout"
 import { Providers } from "./providers"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -42,21 +61,6 @@ export const metadata: Metadata = {
   },
 }
 
-// export default function RootLayout({
-//   children,
-// }: Readonly<{
-//   children: React.ReactNode;
-// }>) {
-//   return (
-//     <html lang="en">
-//       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-//           <TopBar />
-//           {children}
-//       </body>
-//     </html>
-//   );
-// }
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -65,7 +69,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+        className={`${lora.variable} ${outfit.variable} antialiased bg-white text-gray-900`}
       >
         <Providers>
           <TopBar showSearch={false} />
