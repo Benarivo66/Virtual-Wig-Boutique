@@ -27,7 +27,7 @@ export default function UserIcon({ user }: UserIconProps) {
       aria-label={ariaLabel}
     >
       <FaUserCircle className="user-icon" aria-hidden="true" />
-      {user && <span className="user-name-mobile">{user.name}</span>}
+      {/* {user && <span className="user-name-mobile">{user.name}</span>} */}
     </Link>
   )
 }

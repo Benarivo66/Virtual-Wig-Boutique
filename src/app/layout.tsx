@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: "%s | Virtual Wig Boutique",
   },
   description: "Discover, buy, and sell unique items at Virtual Wig Boutique.",
-  keywords: ["handmade", "marketplace", "crafts", "artisan", "shop"],
+  keywords: ["hair", "marketplace", "wig", "beauty", "shop"],
   openGraph: {
     title: "Virtual Wig Boutique",
     description: "Discover, buy, and sell unique items at Virtual Wig Boutique",

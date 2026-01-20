@@ -133,6 +133,7 @@
 .hero-component__left__wrapper__call-to-action.secondary {
   background-color: transparent;
   color: white;
+  font-size: 120%;
   border: 2px solid rgba(255, 255, 255, 0.8);
 }
 

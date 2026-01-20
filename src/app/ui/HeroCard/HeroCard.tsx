@@ -108,9 +108,6 @@ function HeroComponent() {
               type="button"
               aria-label="View all products in our collection"
             >
-              <span className="button-icon" aria-hidden="true">
-                👀
-              </span>
               View Collection
             </button>
           </div>

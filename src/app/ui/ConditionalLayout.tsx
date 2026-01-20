@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Sidenav from './Sidenav/Sidenav';
+import UserSidenav from './UserSidenav/UserSidenav';
 
 interface ConditionalLayoutProps {
     children: React.ReactNode;
@@ -18,6 +19,13 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
         return (
             <div className="flex min-h-screen">
                 <Sidenav />
+                <main className="flex-1 p-6">{children}</main>
+            </div>
+        );
+    }else{
+        return (
+            <div className="flex min-h-screen">
+                <UserSidenav />
                 <main className="flex-1 p-6">{children}</main>
             </div>
         );
