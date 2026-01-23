@@ -1,8 +1,8 @@
 # Virtual Wig Boutique
 
 Tasks
-- change Filter on product page to hamburger for mobile
-- Make Heading stand out
+- Admin edit product
+- fix design issue in product details for user (/me and /product/[id])
 
 Developer guide and reference for the Virtual Wig Boutique storefront (Next.js App Router).
 
