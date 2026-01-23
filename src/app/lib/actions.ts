@@ -63,6 +63,56 @@ export async function createProduct(prevState: any, formData: FormData) {
   redirect("/admin/products")
 }
 
+export async function updateProduct(
+  productId: string,
+  prevState: any,
+  formData: FormData
+) {
+  const validatedFields = CreateProductSchema.safeParse({
+    name: formData.get("name"),
+    description: formData.get("description"),
+    price: formData.get("price"),
+    category: formData.get("category"),
+    image_url: formData.get("image_url"),
+    video_url: formData.get("video_url"),
+  })
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to update product.",
+    }
+  }
+
+  const { name, description, price, category, image_url, video_url } =
+    validatedFields.data
+
+  try {
+    requireAuth()
+
+    await sql`
+      UPDATE products
+      SET
+        name = ${name},
+        description = ${description},
+        price = ${price},
+        category = ${category},
+        image_url = ${image_url || null},
+        video_url = ${video_url || null}
+      WHERE id = ${productId}
+    `
+  } catch (error) {
+    console.error("Database Error:", error)
+    return {
+      errors: {},
+      message: "Database Error: Failed to update product.",
+    }
+  }
+
+  redirect("/admin/products")
+}
+
+
 const CreateUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
