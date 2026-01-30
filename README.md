@@ -1,8 +1,7 @@
 # Virtual Wig Boutique
 
 Tasks
-- Admin edit product
-- fix design issue in product details for user (/me and /product/[id])
+- modify checkout
 
 Developer guide and reference for the Virtual Wig Boutique storefront (Next.js App Router).
 
