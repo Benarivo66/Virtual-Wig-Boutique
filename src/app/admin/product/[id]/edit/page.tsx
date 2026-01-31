@@ -6,10 +6,10 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
 export default async function EditProductPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const rows = await sql<Product[]>`
-    SELECT * FROM products WHERE id = ${params.id}
+    SELECT * FROM products WHERE id = ${(await params).id}
   `
 
   const product = rows[0]
