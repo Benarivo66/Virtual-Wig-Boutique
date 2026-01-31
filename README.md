@@ -1,5 +1,8 @@
 # Virtual Wig Boutique
 
+Tasks
+- modify checkout
+
 Developer guide and reference for the Virtual Wig Boutique storefront (Next.js App Router).
 
 This repository is a Next.js application (App Router) with server-side Postgres access, Cloudinary uploads for media, JWT-based authentication, and a set of reusable UI components under `src/app/ui`.

@@ -3,6 +3,7 @@
 import { z } from "zod"
 import postgres from "postgres"
 import { redirect } from "next/navigation"
+import { requireAuth } from "./auth-server"
 
 export type State = {
   errors?: {
@@ -43,6 +44,8 @@ export async function createProduct(prevState: any, formData: FormData) {
     validatedFields.data
 
   try {
+    requireAuth()
+
     await sql`
       INSERT INTO products (name, description, price, category, image_url, video_url)
       VALUES (${name}, ${description}, ${price}, ${category}, ${
@@ -59,6 +62,56 @@ export async function createProduct(prevState: any, formData: FormData) {
 
   redirect("/admin/products")
 }
+
+export async function updateProduct(
+  productId: string,
+  prevState: any,
+  formData: FormData
+) {
+  const validatedFields = CreateProductSchema.safeParse({
+    name: formData.get("name"),
+    description: formData.get("description"),
+    price: formData.get("price"),
+    category: formData.get("category"),
+    image_url: formData.get("image_url"),
+    video_url: formData.get("video_url"),
+  })
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to update product.",
+    }
+  }
+
+  const { name, description, price, category, image_url, video_url } =
+    validatedFields.data
+
+  try {
+    requireAuth()
+
+    await sql`
+      UPDATE products
+      SET
+        name = ${name},
+        description = ${description},
+        price = ${price},
+        category = ${category},
+        image_url = ${image_url || null},
+        video_url = ${video_url || null}
+      WHERE id = ${productId}
+    `
+  } catch (error) {
+    console.error("Database Error:", error)
+    return {
+      errors: {},
+      message: "Database Error: Failed to update product.",
+    }
+  }
+
+  redirect("/admin/products")
+}
+
 
 const CreateUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -242,5 +295,23 @@ export async function createReview(
       errors: {},
       message: "Database Error: Failed to create review.",
     }
+  }
+}
+
+export async function deleteProduct(productId: string) {
+  requireAuth()
+
+  if (!productId) {
+    throw new Error("Invalid product ID")
+  }
+
+  try {
+    await sql`DELETE FROM ratings WHERE product_id = ${productId}`;
+    await sql`DELETE FROM request_product WHERE product_id = ${productId}`;
+    await sql`DELETE FROM products WHERE id = ${productId}`;
+
+  } catch (error) {
+    console.error("Database Error:", error)
+    throw new Error("Database Error: Failed to delete product.")
   }
 }

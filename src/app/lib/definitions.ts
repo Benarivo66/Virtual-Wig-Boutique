@@ -37,3 +37,13 @@ export type ReviewField = {
   user_name?: string; // We'll get this from joining with users table
   title?: string; // Add this if your ratings table has a title column
 };
+
+export type Product = {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  image_url: string | null
+  video_url: string | null
+}

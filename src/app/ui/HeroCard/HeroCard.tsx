@@ -81,17 +81,17 @@ function HeroComponent() {
               <span className="feature-icon">✨</span>
               <span>Premium Quality</span>
             </div>
-            <div className="feature-item">
+            {/* <div className="feature-item">
               <span className="feature-icon">🚚</span>
               <span>Free Shipping</span>
             </div>
             <div className="feature-item">
               <span className="feature-icon">💯</span>
               <span>30-Day Returns</span>
-            </div>
+            </div> */}
           </div>
           <div className="hero-component__left__wrapper__actions">
-            <button
+            {/* <button
               className="hero-component__left__wrapper__call-to-action primary"
               onClick={handleShopNow}
               type="button"
@@ -101,20 +101,17 @@ function HeroComponent() {
                 🛍️
               </span>
               Shop Now
-            </button>
+            </button> */}
             <button
               className="hero-component__left__wrapper__call-to-action secondary"
               onClick={handleLearnMore}
               type="button"
               aria-label="View all products in our collection"
             >
-              <span className="button-icon" aria-hidden="true">
-                👀
-              </span>
               View Collection
             </button>
           </div>
-          <div className="hero-component__left__wrapper__offer">
+          {/* <div className="hero-component__left__wrapper__offer">
             <p className="offer-text">
               <span className="offer-highlight" aria-hidden="true">
                 🎉 Special Offer:
@@ -129,7 +126,7 @@ function HeroComponent() {
             >
               Copy Code
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="hero-component__right">
@@ -142,14 +139,14 @@ function HeroComponent() {
               imageLoaded ? "loaded" : ""
             }`}
             src="/images/hero-image.webp"
-            alt="Beautiful woman showcasing premium wig collection at Virtual Wig Boutique"
+            alt="A display of premium wig collections"
             onLoad={() => setImageLoaded(true)}
           />
-          <div className="hero-image-overlay">
+          {/* <div className="hero-image-overlay">
             <div className="hero-badge">
               <span className="badge-text">New Collection</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa"
+import { deleteProduct } from "@/app/lib/actions"
 import { ProductField } from "@/app/lib/definitions"
 import { useToast } from "@/app/lib/contexts/ToastContext"
 
@@ -56,14 +57,8 @@ export default function AdminProductDetailPage() {
 
     try {
       setDeleteLoading(true)
-      const response = await fetch(`/api/products/${productId}`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product")
-      }
-
+     
+      await deleteProduct(productId);
       showSuccess("Product deleted successfully")
       router.push("/admin/products")
     } catch (err) {

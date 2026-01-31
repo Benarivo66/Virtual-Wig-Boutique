@@ -1,8 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
 .user-dashboard {
     min-height: 100vh;
     background: #f8fafc;
     padding-top: 6rem;
-    /* Account for fixed header */
 }
 
 .dashboard-container {
@@ -42,7 +45,7 @@
     font-size: 1.5rem;
 }
 
-.user-info {
+ .user-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -125,7 +128,7 @@
     overflow-x: auto;
 }
 
-.nav-tab {
+ .nav-tab {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -138,13 +141,13 @@
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
-    flex-shrink: 0;
-}
+    flex-shrink: 0; 
+} 
 
 .nav-tab:hover {
     background: #f3f4f6;
     color: #374151;
-}
+} 
 
 .nav-tab.active {
     background: #2b6777;
@@ -363,7 +366,6 @@
     background: #b91c1c;
 }
 
-/* Mobile responsive design */
 @media (max-width: 768px) {
     .dashboard-container {
         padding: 1rem;
@@ -399,6 +401,7 @@
     }
 
     .nav-tab {
+        flex-direction: column;
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
     }
@@ -444,7 +447,6 @@
     }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
 
     .dashboard-header,
@@ -462,7 +464,6 @@
     }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
 
     .admin-link,
@@ -484,7 +485,6 @@
 }
 
 
-/* Review Links Styles - Add to UserDashboard.css */
 .review-link,
 .review-item-link,
 .review-order-link {
@@ -514,7 +514,6 @@
   font-size: 0.75rem;
 }
 
-/* Order Actions */
 .order-actions {
   display: flex;
   justify-content: flex-end;
@@ -528,7 +527,6 @@
   margin-top: 0.75rem;
 }
 
-/* Item Actions */
 .item-actions {
   display: flex;
   align-items: center;
@@ -567,7 +565,6 @@
   color: #059669;
 }
 
-/* Recent orders list adjustments */
 .recent-orders-list {
   display: flex;
   flex-direction: column;

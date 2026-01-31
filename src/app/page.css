@@ -12,6 +12,14 @@
   padding: 1%;
 }
 
+.about {
+  margin: 2%;
+}
+
+.about p{
+  padding: 2%;
+}
+
 /* Homepage specific styles */
 .homepage-container {
   min-height: 100vh;
