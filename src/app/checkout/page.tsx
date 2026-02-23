@@ -2,16 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/app/lib/hooks/useAuth";
 import { useCart } from "@/app/lib/contexts/CartContext";
 import { useToast } from "@/app/lib/contexts/ToastContext";
 import "../page.css";
 
-const PaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
-  { ssr: false }
-);
+// const PaystackButton = dynamic(
+//   () => import("react-paystack").then((mod) => mod.PaystackButton),
+//   { ssr: false }
+// );
 interface ShippingInfo {
   firstName: string;
   lastName: string;
@@ -192,7 +193,13 @@ const handlePaymentSuccess = async (reference: any) => {
         <p>Total: ₦{totalPrice.toLocaleString()}</p>
       </div>
 
-  <PaystackButton
+      <Link href="/payment">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+          Proceed to Payment
+        </button>
+      </Link>
+
+  {/* <PaystackButton
     reference={paystackConfig.reference}
     email={paystackConfig.email}
     amount={paystackConfig.amount}
@@ -203,7 +210,8 @@ const handlePaymentSuccess = async (reference: any) => {
     onClose={handlePaymentClose}
     className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-center"
     disabled={items.length === 0 || !shippingInfo.email}
-  />
+  /> */}
+  
 
     </div>
   );
