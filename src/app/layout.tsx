@@ -37,22 +37,22 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: {
-    default: "Virtual Wig Boutique",
-    template: "%s | Virtual Wig Boutique",
+    default: "Chi-Hairlux Store",
+    template: "%s | Chi-Hairlux Store",
   },
-  description: "Discover, buy, and sell unique items at Virtual Wig Boutique.",
+  description: "Discover, buy, and sell unique items at Chi-Hairlux Store.",
   keywords: ["hair", "marketplace", "wig", "beauty", "shop"],
   openGraph: {
-    title: "Virtual Wig Boutique",
-    description: "Discover, buy, and sell unique items at Virtual Wig Boutique",
+    title: "Chi-Hairlux Store",
+    description: "Discover, buy, and sell unique items at Chi-Hairlux Store",
     url: "http://localhost:3000",
-    siteName: "Virtual Wig Boutique",
+    siteName: "Chi-Hairlux Store",
     images: [
       {
         url: "/hero-image.webp",
         width: 1200,
         height: 630,
-        alt: "Virtual Wig Boutique",
+        alt: "Chi-Hairlux Store",
         type: "image/jpeg",
       },
     ],

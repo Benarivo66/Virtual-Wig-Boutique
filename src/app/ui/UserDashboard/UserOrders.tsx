@@ -113,7 +113,7 @@ export default function UserOrders({ user, orders }: UserOrdersProps) {
                     })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    ${order.totalAmount.toFixed(2)}
+                    ₦{order.totalAmount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -148,7 +148,7 @@ export default function UserOrders({ user, orders }: UserOrdersProps) {
           </div>
           <div className="text-center sm:text-right">
             <p className="text-2xl font-bold text-blue-900">
-              ${orders.reduce((total, order) => total + order.totalAmount, 0).toFixed(2)}
+              ₦{orders.reduce((total, order) => total + order.totalAmount, 0).toFixed(2)}
             </p>
             <p className="text-sm text-blue-700">Total spent</p>
           </div>

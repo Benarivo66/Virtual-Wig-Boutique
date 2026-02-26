@@ -158,7 +158,7 @@ export default function OrdersPage() {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-lg">${order.total_amount.toFixed(2)}</p>
+                    <p className="font-semibold text-lg">₦{order.total_amount.toFixed(2)}</p>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       order.status === 'paid' 
                         ? 'bg-green-100 text-green-800' 
@@ -179,7 +179,7 @@ export default function OrdersPage() {
                           <span className="font-medium">{item.name}</span>
                           <span className="text-gray-500 ml-2">× {item.quantity}</span>
                         </div>
-                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-medium">₦{(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>

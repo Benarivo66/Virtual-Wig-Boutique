@@ -1,7 +1,14 @@
 # Virtual Wig Boutique
 
 Tasks
-- modify checkout
+- delivery location and prices
+- human hair category
+- hairblend category
+- contact info
+- about us
+- seo optimization
+- google sign-in implementation
+- change of url if possible
 
 Developer guide and reference for the Virtual Wig Boutique storefront (Next.js App Router).
 

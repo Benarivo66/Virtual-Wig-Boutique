@@ -238,7 +238,7 @@ function CartPage() {
                                   {item.category}
                                 </p>
                                 <p className="text-blue-600 font-semibold text-lg mt-1">
-                                  $
+                                  ₦
                                   {(typeof item.price === "string"
                                     ? parseFloat(item.price)
                                     : item.price
@@ -343,7 +343,7 @@ function CartPage() {
                                 Subtotal:{" "}
                               </span>
                               <span className="font-semibold text-gray-900">
-                                $
+                                ₦
                                 {(
                                   (typeof item.price === "string"
                                     ? parseFloat(item.price)
@@ -369,7 +369,7 @@ function CartPage() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-gray-600">
                       <span>Items ({totalItems})</span>
-                      <span>${totalPrice.toFixed(2)}</span>
+                      <span>₦{totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span>Shipping</span>
@@ -382,7 +382,7 @@ function CartPage() {
                     <div className="border-t pt-4">
                       <div className="flex justify-between text-xl font-semibold text-gray-900">
                         <span>Total</span>
-                        <span>${totalPrice.toFixed(2)}</span>
+                        <span>₦{totalPrice.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

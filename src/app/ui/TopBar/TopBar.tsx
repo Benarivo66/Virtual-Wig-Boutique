@@ -21,7 +21,7 @@ export default function TopBar({ showSearch = true, onSearch }: TopBarProps) {
       <Link
         className="topbar-logo"
         href={"/"}
-        aria-label="Virtual Wig Boutique - Go to homepage"
+        aria-label="Chi-Hairlux Store - Go to homepage"
       >
         Chi-Hairlux
       </Link>

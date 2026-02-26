@@ -46,13 +46,21 @@ export default function ProductCard({
   >("idle")
 
   // Format price with proper currency formatting
+  // const formatPrice = (price: number): string => {
+  //   return new Intl.NumberFormat("en-US", {
+  //     style: "currency",
+  //     currency: "USD",
+  //     minimumFractionDigits: 2,
+  //   }).format(price)
+  // }
+
   const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(price)
-  }
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 2,
+  }).format(price)
+}
 
   // Generate star rating display - FIXED VERSION
   const renderStarRating = (rating: number | null | undefined) => {

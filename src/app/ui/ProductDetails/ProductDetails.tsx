@@ -28,7 +28,7 @@ function ProductDetails({ product }: { product: ProductField }) {
           {product.description || "No description available."}
         </div>
         <div className="product-details__price">
-          ${Number(product.price).toFixed(2)}
+          ₦{Number(product.price).toFixed(2)}
         </div>
         <div className="product-details__category">
           Category: {product.category}
