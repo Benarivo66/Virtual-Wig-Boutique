@@ -49,6 +49,15 @@ function Sidenav() {
               View delivery prices
             </Link>
           </li>
+          <li>
+            <Link
+              className={styles.sidenavLink}
+              href="/contact-us"
+              onClick={closeMenu}
+            >
+              Contact Us
+            </Link>
+          </li>
         </ul>
       </nav>
     </>

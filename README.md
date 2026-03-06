@@ -1,11 +1,6 @@
 # Virtual Wig Boutique
 
 Tasks
-- delivery location and prices
-- human hair category
-- hairblend category
-- contact info
-- about us
 - seo optimization
 - google sign-in implementation
 - change of url if possible
