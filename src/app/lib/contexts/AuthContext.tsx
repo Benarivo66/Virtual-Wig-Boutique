@@ -139,7 +139,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             if (response.ok) {
                 setUser(data.user);
-                showToast('success', 'Registration successful!', 'Welcome to Virtual Wig Boutique!');
+                showToast('success', 'Registration successful!', 'Welcome to Chi-Hairlux Store!');
                 return data.user;
             } else {
                 const errorMessage = data.message || 'Registration failed';

@@ -140,7 +140,7 @@ export default function AdminProductDetailPage() {
               <div>
                 <h2 className="text-lg font-semibold">Price</h2>
                 <p className="text-2xl text-blue-600">
-                  ${Number(product.price).toFixed(2)}
+                  ₦{Number(product.price).toFixed(2)}
                 </p>
               </div>
               <div>

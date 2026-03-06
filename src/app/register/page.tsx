@@ -3,7 +3,7 @@ import RegisterForm from "../ui/RegisterForm/RegisterForm";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "Create your Virtual Wig Boutique account.",
+  description: "Create your Chi-Hairlux Store account.",
 };
 
 export default function RegisterPage() {

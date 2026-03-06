@@ -93,7 +93,7 @@ export default function OrderSuccessPage({
             {orderDetails.amount && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Amount Paid:</span>
-                <span className="font-medium">${orderDetails.amount.toFixed(2)}</span>
+                <span className="font-medium">₦{orderDetails.amount.toFixed(2)}</span>
               </div>
             )}
           </div>

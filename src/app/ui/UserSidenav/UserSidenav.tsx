@@ -40,6 +40,24 @@ function Sidenav() {
               View products
             </Link>
           </li>
+          <li>
+            <Link
+              className={styles.sidenavLink}
+              href="/delivery"
+              onClick={closeMenu}
+            >
+              View delivery prices
+            </Link>
+          </li>
+          <li>
+            <Link
+              className={styles.sidenavLink}
+              href="/contact-us"
+              onClick={closeMenu}
+            >
+              Contact Us
+            </Link>
+          </li>
         </ul>
       </nav>
     </>

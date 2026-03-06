@@ -249,7 +249,7 @@ export default function UserDashboard({ user }: UserDashboardProps) {
                       <div key={order.id} className="recent-order-item">
                         <div className="order-header">
                           <span className="order-reference">Order #{order.payment_reference}</span>
-                          <span className="order-amount">${order.total_amount.toFixed(2)}</span>
+                          <span className="order-amount">₦{order.total_amount.toFixed(2)}</span>
                         </div>
                         <div className="order-details">
                           <span className="order-date">
@@ -311,7 +311,7 @@ export default function UserDashboard({ user }: UserDashboardProps) {
                               <h4 className="font-medium text-gray-900">{product.name}</h4>
                               <p className="text-sm text-gray-600">{product.category}</p>
                               <p className="text-lg font-semibold text-green-600 mt-1">
-                                ${Number(product.price).toFixed(2)}
+                                ₦{Number(product.price).toFixed(2)}
                               </p>
                             </div>
                             <Link 
