@@ -9,6 +9,7 @@ export default function DeliveryLocationsPage() {
     { name: "Aba", price: 3500 },
     { name: "Enugu", price: 3500 },
     { name: "Abuja", price: 3500 },
+    { name: "Lagos", price: 5000 },
     { name: "Oghara", price: 3500 },
     { name: "Ughelli", price: 3500 },
     { name: "Sapele", price: 3500 },
