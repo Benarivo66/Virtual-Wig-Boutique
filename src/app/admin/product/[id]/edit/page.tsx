@@ -1,7 +1,6 @@
-import postgres from "postgres"
 import EditProductForm from "@/app/ui/EditProductForm"
 import { Product } from "@/app/lib/definitions"
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
+import { sql } from "@/app/lib/db";
 
 export default async function EditProductPage({
   params,

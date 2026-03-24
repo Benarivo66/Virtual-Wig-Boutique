@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { FaEye, FaEyeSlash, FaGoogle, FaSpinner } from "react-icons/fa"
-import { useAuth } from "@/app/lib/hooks/useAuth"
-import { useRouter } from "next/navigation"
-import "./AuthForm.css"
+import { useState } from "react";
+import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
+import { useAuth } from "@/app/lib/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import "./AuthForm.css";
 
 interface AuthFormProps {
-  mode: "login" | "register"
-  onModeChange: (mode: "login" | "register") => void
-  returnUrl?: string
+  mode: "login" | "register";
+  onModeChange: (mode: "login" | "register") => void;
+  returnUrl?: string;
 }
 
 export default function AuthForm({
@@ -17,64 +18,109 @@ export default function AuthForm({
   onModeChange,
   returnUrl = "/",
 }: AuthFormProps) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const { login, register, isLoading } = useAuth()
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
+  const { login, register, isLoading } = useAuth();
+  const router = useRouter();
+
+  /**
+   * Centralized redirect logic
+   * - Uses returnUrl if provided
+   * - Otherwise redirects based on role
+   */
+  const redirectUser = (user: any) => {
+    const destination =
+      returnUrl && returnUrl !== "/"
+        ? returnUrl
+        : user?.role === "admin"
+          ? "/admin"
+          : "/me";
+
+    window.location.href = destination;
+  };
+
+  /**
+   * Email / Password submit handler
+   */
   const handleSubmit = async (formData: FormData) => {
-    setError(null)
-    setSuccess(null)
+    setError(null);
+    setSuccess(null);
 
     if (mode === "login") {
-      const email = formData.get("email") as string
-      const password = formData.get("password") as string
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
 
       try {
-        const loggedInUser = await login(email, password)
-        setSuccess("Login successful! Redirecting...")
-        setTimeout(() => {
-          router.push("/me")
-        }, 1000)
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "Login failed")
+        const user = await login(email, password);
+        setSuccess("Login successful! Redirecting...");
+        redirectUser(user);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Login failed");
       }
     } else {
-      // Handle registration
-      const password = formData.get("password") as string
-      const confirmPassword = formData.get("confirmPassword") as string
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
 
       if (password !== confirmPassword) {
-        setError("Passwords do not match")
-        return
+        setError("Passwords do not match");
+        return;
       }
 
       const userData = {
         name: formData.get("name") as string,
         email: formData.get("email") as string,
-        password: password,
+        password,
         role: "user" as const,
-      }
+      };
 
       try {
-        const newUser = await register(userData)
-        setSuccess("Registration successful! You are now logged in.")
-        setTimeout(() => {
-          // Redirect based on user role if returnUrl is default
-          if (returnUrl === "/") {
-            const redirectUrl = newUser.role === "admin" ? "/admin" : "/me"
-            router.push(redirectUrl)
-          } else {
-            router.push(returnUrl)
-          }
-        }, 2000)
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "Registration failed")
+        const user = await register(userData);
+        setSuccess("Registration successful! Redirecting...");
+        redirectUser(user);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Registration failed");
       }
     }
-  }
+  };
+
+  /**
+   * Google OAuth success handler
+   */
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse,
+  ) => {
+    try {
+      setError(null);
+      setSuccess(null);
+
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          token: credentialResponse.credential,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Google login failed");
+
+      const user = await res.json();
+
+      setSuccess("Login successful! Redirecting...");
+      redirectUser(user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google login failed");
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google Login Failed");
+  };
 
   return (
     <div className="auth-form-container">
@@ -98,56 +144,43 @@ export default function AuthForm({
       <form action={handleSubmit} className="auth-form">
         {mode === "register" && (
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Full Name
-            </label>
+            <label className="form-label">Full Name</label>
             <input
-              id="name"
               name="name"
               type="text"
               required
               className="form-input"
-              placeholder="Enter your full name"
               disabled={isLoading}
             />
           </div>
         )}
 
         <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email Address
-          </label>
+          <label className="form-label">Email Address</label>
           <input
-            id="email"
             name="email"
             type="email"
             required
             className="form-input"
-            placeholder="Enter your email"
             disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
+          <label className="form-label">Password</label>
           <div className="password-input-container">
             <input
-              id="password"
               name="password"
               type={showPassword ? "text" : "password"}
               required
-              className="form-input password-input"
-              placeholder="Enter your password"
               minLength={6}
+              className="form-input password-input"
               disabled={isLoading}
             />
             <button
               type="button"
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -156,27 +189,20 @@ export default function AuthForm({
 
         {mode === "register" && (
           <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">
-              Confirm Password
-            </label>
+            <label className="form-label">Confirm Password</label>
             <div className="password-input-container">
               <input
-                id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 required
-                className="form-input password-input"
-                placeholder="Confirm your password"
                 minLength={6}
+                className="form-input password-input"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={
-                  showConfirmPassword ? "Hide password" : "Show password"
-                }
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -184,17 +210,8 @@ export default function AuthForm({
           </div>
         )}
 
-        {error && (
-          <div className="error-message" role="alert">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="success-message" role="alert">
-            {success}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
         <button
           type="submit"
@@ -217,14 +234,12 @@ export default function AuthForm({
           <span>or</span>
         </div>
 
-        <button
-          type="button"
-          className="google-auth-button"
-          disabled={isLoading}
-        >
-          <FaGoogle />
-          Continue with Google
-        </button>
+        <div className="google-auth-button">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
+        </div>
 
         <div className="auth-footer">
           {mode === "login" ? (
@@ -253,5 +268,5 @@ export default function AuthForm({
         </div>
       </form>
     </div>
-  )
+  );
 }

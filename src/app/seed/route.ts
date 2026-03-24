@@ -1,14 +1,9 @@
+/** 
 import bcrypt from 'bcryptjs';
 import postgres from 'postgres';
 import { NextResponse } from 'next/server';
-// import { users, products } from '../lib/placeholder-data';
+import { sql } from "@/app/lib/db";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
-// async function resetDatabase(sql: postgres.Sql) {
-//   await sql`DROP TABLE IF EXISTS wig_products;`;
-//   await sql`DROP TABLE IF EXISTS wig_users;`;
-// }
 
 async function resetDatabase(sql: postgres.Sql) {
   await sql`TRUNCATE TABLE products RESTART IDENTITY CASCADE;`;
@@ -99,5 +94,36 @@ export async function GET() {
   } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+*/
+
+import { NextResponse } from "next/server";
+import postgres from "postgres";
+import { sql } from "@/app/lib/db";
+
+async function updateUsersTable(sql: postgres.Sql) {
+  await sql`
+    ALTER TABLE users
+    ALTER COLUMN password DROP NOT NULL;
+  `;
+}
+
+// Export GET route to run migration once
+export async function GET() {
+  try {
+    await sql.begin(async (sql) => {
+      await updateUsersTable(sql);
+    });
+
+    return NextResponse.json({
+      message: "Users table updated: password is now nullable",
+    });
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }

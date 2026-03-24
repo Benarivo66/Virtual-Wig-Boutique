@@ -2,6 +2,12 @@ import bcrypt from 'bcrypt';
 import { UserField } from './definitions';
 import { fetchUserByEmail, createUser } from './data';
 import { RegisterData, AuthResponse, LoginCredentials } from './auth-types';
+import { sql } from "@/app/lib/db";
+interface GoogleUserInput {
+  email: string;
+  name: string;
+  image?: string;
+}
 
 // Salt rounds for bcrypt hashing
 const SALT_ROUNDS = 12;
@@ -43,25 +49,34 @@ export async function validatePassword(password: string, hash: string): Promise<
  * @param password - User's plain text password
  * @returns Promise resolving to user data or null if authentication fails
  */
-export async function authenticateUser(email: string, password: string): Promise<UserField | null> {
-    try {
-        // Fetch user by email
-        const user = await fetchUserByEmail(email);
-        if (!user) {
-            return null;
-        }
+export async function authenticateUser(
+  email: string,
+  password: string
+): Promise<UserField | null> {
+  try {
+    // Fetch user by email
+    const user = await fetchUserByEmail(email);
 
-        // Validate password
-        const isPasswordValid = await validatePassword(password, user.password);
-        if (!isPasswordValid) {
-            return null;
-        }
-
-        return user;
-    } catch (error) {
-        console.error('Error authenticating user:', error);
-        return null;
+    // user not found OR OAuth-only account
+    if (!user || !user.password) {
+      return null;
     }
+
+    // Validate password
+    const isPasswordValid = await validatePassword(
+      password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error authenticating user:", error);
+    return null;
+  }
 }
 
 /**
@@ -162,4 +177,36 @@ export function createAuthResponse(user: UserField, message: string): AuthRespon
         },
         message,
     };
+}
+
+export async function findOrCreateGoogleUser(
+  googleUser: GoogleUserInput
+) {
+  const { email, name} = googleUser;
+
+  try {
+    // Check if user already exists
+    const existingUsers = await sql`
+      SELECT id, email, name, role
+      FROM users
+      WHERE email = ${email}
+      LIMIT 1
+    `;
+
+    if (existingUsers.length > 0) {
+      return existingUsers[0];
+    }
+
+    // Create new Google user
+   const newUsers = await sql`
+  INSERT INTO users (email, name, password, role)
+  VALUES (${email}, ${name}, NULL, 'user')
+  RETURNING id, email, name, role
+`;
+
+    return newUsers[0];
+  } catch (error) {
+    console.error("Google user creation failed:", error);
+    throw new Error("Failed to create or fetch Google user");
+  }
 }
