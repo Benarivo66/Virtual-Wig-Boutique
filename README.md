@@ -1,9 +1,8 @@
 # Virtual Wig Boutique
 
 Tasks
-- seo optimization
 - google sign-in implementation
-- change of url if possible
+* remove .next, then unpiece the auth layer one by one
 
 Developer guide and reference for the Virtual Wig Boutique storefront (Next.js App Router).
 
@@ -28,8 +27,7 @@ This repository is a Next.js application (App Router) with server-side Postgres 
    Open http://localhost:3000
 
    **SAMPlE Users For Test**
-   - user (email: iz4comed@yahoo.com, password: 123456) Or just register a new user
-   - admin (email: juju@gmail.com, password: jujuboy)
+   
 
    **Deployed App**
    https://virtual-wig-boutique.vercel.app/

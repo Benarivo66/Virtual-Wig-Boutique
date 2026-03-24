@@ -5,6 +5,7 @@ import { useAuth } from "@/app/lib/hooks/useAuth";
 import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./login-form.module.css";
 import Link from "next/link";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ export default function LoginForm() {
 
       // Redirect based on user role if no specific callback URL
       if (!searchParams.get("callbackUrl")) {
-        const redirectUrl = loggedInUser.role === 'admin' ? '/admin' : '/me';
+        const redirectUrl = loggedInUser.role === "admin" ? "/admin" : "/me";
         router.push(redirectUrl);
       } else {
         router.push(callbackUrl);
@@ -35,6 +36,7 @@ export default function LoginForm() {
       setErrorMessage(error instanceof Error ? error.message : "Login failed");
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>

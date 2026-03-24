@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/app/lib/jwt';
 import { ErrorResponse } from '@/app/lib/auth-types';
-import postgres from "postgres";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+import { sql } from "@/app/lib/db";
 
 export async function GET(request: NextRequest) {
   try {

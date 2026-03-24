@@ -1,8 +1,7 @@
-import postgres from "postgres"
 import { ProductField, UserField, ReviewField } from "./definitions"
 import { products as placeholderProducts } from "./placeholder-data"
+import { sql } from "@/app/lib/db";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" })
 
 export async function fetchProducts() {
   try {

@@ -265,19 +265,18 @@ export default function ProductCard({
       aria-label={`${name} - ${category} wig, ${formatPrice(Number(price))}`}
     >
       {/* Image Container */}
+      
       <div className="relative aspect-square overflow-hidden">
-        {/* Category Badge */}
-        {showCategory && (
+        {/* {showCategory && (
           <div className="absolute top-3 left-3 z-10">
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(
                 category
               )}`}
             >
-              {category}
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Product Image */}
         <div className="w-full h-full bg-gray-50 flex items-center justify-center relative">

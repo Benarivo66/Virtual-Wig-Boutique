@@ -1,12 +1,5 @@
 import { NextResponse } from "next/server";
-import postgres from "postgres";
-
-// Create a more robust database connection
-const sql = postgres(process.env.POSTGRES_URL!, { 
-  ssl: "require",
-  idle_timeout: 20,
-  max_lifetime: 60 * 30,
-});
+import { sql } from "@/app/lib/db";
 
 export async function POST(req: Request) {
   try {

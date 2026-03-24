@@ -1,7 +1,5 @@
-import postgres from "postgres";
 import { UserField } from "./definitions";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+import { sql } from "@/app/lib/db";
 
 export async function fetchUserById(id: string): Promise<UserField | null> {
   try {
