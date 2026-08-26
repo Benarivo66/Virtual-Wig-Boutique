@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     response.cookies.set("auth-token", jwt, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https",
       sameSite: "strict",
       path: "/",
       maxAge: 15 * 60,

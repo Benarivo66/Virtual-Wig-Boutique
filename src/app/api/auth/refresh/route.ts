@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         // Set new JWT token in HTTP-only cookie
         response.cookies.set('auth-token', newToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+                secure: request.nextUrl.protocol === 'https:' || request.headers.get('x-forwarded-proto') === 'https',
             sameSite: 'strict',
             maxAge: 15 * 60, // 15 minutes in seconds
             path: '/',

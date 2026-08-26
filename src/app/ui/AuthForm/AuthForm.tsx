@@ -109,7 +109,7 @@ export default function AuthForm({
 
       if (!res.ok) throw new Error("Google login failed");
 
-      const user = await res.json();
+      const { user } = await res.json();
 
       setSuccess("Login successful! Redirecting...");
       redirectUser(user);

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         // Set JWT token in HTTP-only cookie for automatic login
         response.cookies.set('auth-token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: request.nextUrl.protocol === 'https:' || request.headers.get('x-forwarded-proto') === 'https',
             sameSite: 'strict',
             maxAge: 15 * 60, // 15 minutes in seconds
             path: '/',
